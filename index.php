@@ -440,6 +440,17 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 0 -1px 3px rgba(0, 0, 0, 0.05);
         }
         
+        /* Desktop navigation styles */
+        .desktop-nav {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .desktop-nav {
+                display: flex;
+            }
+        }
+        
         /* Enhanced Floating Action Button */
         .fab {
             position: fixed;
@@ -459,6 +470,21 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             z-index: 49;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Desktop FAB positioning */
+        @media (min-width: 768px) {
+            .fab {
+                bottom: 32px;
+                right: 32px;
+                width: 64px;
+                height: 64px;
+            }
+            
+            .fab svg {
+                width: 28px;
+                height: 28px;
+            }
         }
         
         .fab:hover {
@@ -523,9 +549,11 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
-        /* Space at bottom for nav with safe area */
-        #stack-feed {
-            padding-bottom: calc(80px + var(--safe-area-inset-bottom));
+        /* Space at bottom for mobile nav only */
+        @media (max-width: 768px) {
+            #stack-feed {
+                padding-bottom: calc(80px + var(--safe-area-inset-bottom));
+            }
         }
         
         /* Enhanced accessibility for screen readers */
@@ -541,7 +569,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             border: 0;
         }
         
-        /* Desktop scroll improvements */
+        /* Desktop scroll improvements and enhancements */
         @media (min-width: 768px) {
             .app-container {
                 /* Custom scrollbar for desktop */
@@ -564,6 +592,51 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             
             .app-container::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 107, 53, 0.5);
+            }
+            
+            /* Desktop navigation hover effects */
+            .desktop-nav button {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .desktop-nav button::before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: linear-gradient(90deg, var(--flow-primary), #FF8A65);
+                transition: width 0.3s ease;
+            }
+            
+            .desktop-nav button:hover::before {
+                width: 100%;
+            }
+            
+            /* Better desktop card hover effects */
+            .circle-card:hover {
+                transform: translateY(-4px) scale(1.05);
+            }
+            
+            .stack-card:hover {
+                transform: translateY(-2px) scale(1.01);
+            }
+            
+            /* Desktop-specific layout improvements */
+            header {
+                border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+            }
+            
+            /* Better desktop spacing */
+            .circle-container {
+                padding: 24px;
+                gap: 32px;
+            }
+            
+            .stack-feed-container {
+                padding: 0;
             }
         }
         
@@ -671,14 +744,38 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     <div class="app-container">
     <!-- The Lookout Header -->
     <header class="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div class="px-4 py-3 flex items-center justify-between">
+        <div class="px-4 lg:px-8 py-3 flex items-center justify-between max-w-7xl mx-auto">
             <div class="flex items-center space-x-3">
-                <h1 class="text-xl font-bold text-gray-900">The Lookout</h1>
-                <span class="text-xs text-gray-500"><?php echo date('M j'); ?></span>
+                <h1 class="text-xl lg:text-2xl font-bold text-gray-900">The Lookout</h1>
+                <span class="text-xs lg:text-sm text-gray-500"><?php echo date('M j'); ?></span>
             </div>
             
-            <!-- Tent Icon - Opens Camp Drawer -->
-            <button onclick="openCampDrawer()" class="p-2 hover:bg-gray-50 rounded-lg" aria-label="Open Camp Drawer">
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav hidden lg:flex items-center space-x-6">
+                <button class="px-4 py-2 text-orange-500 font-medium border-b-2 border-orange-500" aria-current="page">
+                    Dashboard
+                </button>
+                <button onclick="viewJourneys()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                    Journeys
+                </button>
+                <button onclick="viewFullCamp()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                    Camp
+                </button>
+                <button onclick="viewProfile()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                    Profile
+                </button>
+            </nav>
+            
+            <!-- Mobile Tent Icon - Opens Camp Drawer -->
+            <button onclick="openCampDrawer()" class="lg:hidden p-2 hover:bg-gray-50 rounded-lg" aria-label="Open Camp Drawer">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 21h18L12 3 3 21zm9-13v6m0 2h.01"/>
+                </svg>
+            </button>
+            
+            <!-- Desktop Camp Button -->
+            <button onclick="openCampDrawer()" class="hidden lg:block p-2 hover:bg-gray-50 rounded-lg" aria-label="Open Camp Drawer">
                 <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M3 21h18L12 3 3 21zm9-13v6m0 2h.01"/>
@@ -687,49 +784,62 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         </div>
     </header>
     
-    <!-- Circle - Horizontal Scrollable Priority Journeys -->
+    <!-- Circle - Responsive Priority Journeys -->
     <?php if (!empty($circleJourneys)): ?>
-    <section class="bg-gradient-to-r from-orange-50 via-white to-pink-50 border-b border-orange-100 py-5">
-        <div class="px-4 mb-3 flex items-center justify-between">
-            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Circle</h2>
-            <span class="text-xs text-orange-600 font-medium"><?php echo count($circleJourneys); ?> active</span>
-        </div>
-        
-        <div class="circle-container flex space-x-4 px-4 overflow-x-auto">
-            <?php foreach ($circleJourneys as $journey): ?>
-            <?php 
-                $pulseClass = '';
-                if ($journey['pulse_status'] == 'warning') $pulseClass = 'warning';
-                if ($journey['pulse_status'] == 'critical') $pulseClass = 'critical';
-                
-                // Get initials or first letter
-                $initials = substr($journey['title'], 0, 1);
-                if ($journey['client_name']) {
-                    $words = explode(' ', $journey['client_name']);
-                    if (count($words) > 1) {
-                        $initials = substr($words[0], 0, 1) . substr($words[1], 0, 1);
+    <section class="bg-gradient-to-r from-orange-50 via-white to-pink-50 border-b border-orange-100 py-5 lg:py-8">
+        <div class="px-4 lg:px-8 mb-3 lg:mb-6 max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm lg:text-lg font-bold text-gray-800 uppercase tracking-wider">Circle</h2>
+                <span class="text-xs lg:text-sm text-orange-600 font-medium"><?php echo count($circleJourneys); ?> active</span>
+            </div>
+            
+            <div class="circle-container lg:px-0 px-4 flex lg:grid space-x-4 lg:space-x-0 overflow-x-auto lg:overflow-visible">
+                <?php foreach ($circleJourneys as $journey): ?>
+                <?php 
+                    $pulseClass = '';
+                    if ($journey['pulse_status'] == 'warning') $pulseClass = 'warning';
+                    if ($journey['pulse_status'] == 'critical') $pulseClass = 'critical';
+                    
+                    // Get initials or first letter
+                    $initials = substr($journey['title'], 0, 1);
+                    if ($journey['client_name']) {
+                        $words = explode(' ', $journey['client_name']);
+                        if (count($words) > 1) {
+                            $initials = substr($words[0], 0, 1) . substr($words[1], 0, 1);
+                        }
                     }
-                }
-            ?>
-            <div class="circle-card" onclick="viewJourney(<?php echo $journey['id']; ?>)" role="button" tabindex="0" aria-label="View <?php echo escapeContent($journey['title']); ?> journey">
-                <div class="circle-ring <?php echo $pulseClass; ?>">
-                    <div class="circle-content">
-                        <span class="text-lg font-semibold text-gray-700"><?php echo strtoupper($initials); ?></span>
-                        <?php if ($journey['pulse_status'] == 'critical'): ?>
-                        <div class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-indicator"></div>
+                ?>
+                <div class="circle-card group" onclick="viewJourney(<?php echo $journey['id']; ?>)" role="button" tabindex="0" aria-label="View <?php echo escapeContent($journey['title']); ?> journey">
+                    <div class="circle-ring <?php echo $pulseClass; ?>">
+                        <div class="circle-content">
+                            <span class="text-lg lg:text-2xl font-semibold text-gray-700"><?php echo strtoupper($initials); ?></span>
+                            <?php if ($journey['pulse_status'] == 'critical'): ?>
+                            <div class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-indicator"></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- Desktop Journey Title -->
+                    <div class="hidden lg:block mt-3 text-center">
+                        <h3 class="text-sm font-semibold text-gray-800 truncate"><?php echo escapeContent($journey['title']); ?></h3>
+                        <?php if ($journey['client_name']): ?>
+                        <p class="text-xs text-gray-500 truncate"><?php echo escapeContent($journey['client_name']); ?></p>
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
-            <?php endforeach; ?>
-            
-            <!-- Add New Journey Circle -->
-            <div class="circle-card" onclick="createJourney()" role="button" tabindex="0" aria-label="Create new journey">
-                <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.03) 0%, rgba(255, 138, 101, 0.03) 100%);">
-                    <div class="circle-content" style="background: transparent; border: none;">
-                        <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                        </svg>
+                <?php endforeach; ?>
+                
+                <!-- Add New Journey Circle -->
+                <div class="circle-card group" onclick="createJourney()" role="button" tabindex="0" aria-label="Create new journey">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.03) 0%, rgba(255, 138, 101, 0.03) 100%);">
+                        <div class="circle-content" style="background: transparent; border: none;">
+                            <svg class="w-8 h-8 lg:w-10 lg:h-10 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <!-- Desktop Add Title -->
+                    <div class="hidden lg:block mt-3 text-center">
+                        <h3 class="text-sm font-semibold text-gray-600">Add Journey</h3>
                     </div>
                 </div>
             </div>
@@ -737,16 +847,16 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     </section>
     <?php endif; ?>
     
-    <!-- Stack - Vertical Moment Feed -->
-    <main class="px-4 py-4 pb-24">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Stack</h2>
+    <!-- Stack - Responsive Moment Feed -->
+    <main class="px-4 lg:px-8 py-4 pb-24 lg:pb-8 max-w-7xl mx-auto">
+        <div class="mb-4 lg:mb-6 flex items-center justify-between">
+            <h2 class="text-sm lg:text-lg font-bold text-gray-800 uppercase tracking-wider">Stack</h2>
             <?php if (!empty($stackMoments)): ?>
-            <span class="text-xs text-gray-500">Latest moments</span>
+            <span class="text-xs lg:text-sm text-gray-500">Latest moments</span>
             <?php endif; ?>
         </div>
         
-        <div id="stack-feed">
+        <div id="stack-feed" class="stack-feed-container">
             <?php if (!empty($stackMoments)): ?>
                 <?php foreach ($stackMoments as $moment): ?>
                 <div class="stack-card swipeable" data-moment-id="<?php echo $moment['id']; ?>" role="article" aria-label="Moment from <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>">
@@ -787,14 +897,14 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Empty State -->
-                <div class="text-center py-12">
-                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="text-center py-12 lg:py-20 col-span-full">
+                    <svg class="w-16 h-16 lg:w-24 lg:h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Start Your Journey</h3>
-                    <p class="text-gray-500 mb-4">Log your first moment to begin</p>
-                    <button onclick="openQuickAdd()" class="px-6 py-2 bg-orange-500 text-white rounded-full font-medium" aria-label="Add your first moment">
+                    <h3 class="text-lg lg:text-2xl font-medium text-gray-900 mb-2">Start Your Journey</h3>
+                    <p class="text-gray-500 mb-4 lg:text-lg">Log your first moment to begin</p>
+                    <button onclick="openQuickAdd()" class="px-6 py-3 bg-orange-500 text-white rounded-full font-medium lg:text-lg hover:bg-orange-600 transition-colors" aria-label="Add your first moment">
                         Add Moment
                     </button>
                 </div>
