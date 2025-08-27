@@ -1,0 +1,78 @@
+/* Quick CSS fixes for better mobile appearance */
+
+/* Make Circle circles more prominent */
+.circle-ring {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.circle-ring.warning {
+    box-shadow: 0 2px 8px rgba(255,184,0,0.3);
+}
+
+.circle-ring.critical {
+    box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+    animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(255,107,107,0.5);
+    }
+}
+
+/* Better Stack cards */
+.stack-card {
+    border: 1px solid var(--flow-border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.stack-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border-color: var(--flow-primary);
+}
+
+/* Journey badge styling */
+.stack-card .text-orange-600 {
+    background: linear-gradient(90deg, #FF6B35 0%, #FF8A65 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    .circle-card {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .stack-card {
+        padding: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .fab {
+        width: 52px;
+        height: 52px;
+        bottom: calc(65px + var(--safe-area-inset-bottom));
+    }
+}
+
+/* Bottom nav active state */
+.mobile-nav button.active {
+    color: var(--flow-primary);
+}
+
+/* Header improvements */
+header {
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.95);
+}
+
+/* Empty state styling */
+.stack-card:last-child {
+    margin-bottom: 80px;
+}

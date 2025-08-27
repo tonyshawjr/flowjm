@@ -281,6 +281,39 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         .quick-add-sheet.open {
             transform: translateY(0);
         }
+        
+        /* Visual Polish */
+        .circle-ring {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .circle-ring.warning {
+            box-shadow: 0 2px 8px rgba(255,184,0,0.3);
+        }
+        
+        .circle-ring.critical {
+            animation: pulse-ring 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(255,107,107,0.3);
+            }
+            50% {
+                box-shadow: 0 4px 16px rgba(255,107,107,0.5);
+            }
+        }
+        
+        /* Better header */
+        header {
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95) !important;
+        }
+        
+        /* Space at bottom for nav */
+        #stack-feed {
+            padding-bottom: 80px;
+        }
     </style>
 </head>
 <body>
