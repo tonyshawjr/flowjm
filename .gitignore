@@ -1,0 +1,66 @@
+# IMPORTANT: Agent OS and AI Assistant Files - DO NOT COMMIT
+.agent-os/
+.claude/
+.cursor/
+.cursorrules
+CLAUDE.md
+/context/
+*.claude
+*.cursor
+
+# Dependencies
+/vendor/
+node_modules/
+
+# Environment files
+.env
+.env.local
+includes/config.local.php
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+error_log
+/logs/
+
+# Uploads (user content)
+/uploads/
+!/uploads/.gitkeep
+
+# Cache
+/cache/
+/tmp/
+
+# Database
+*.sql
+*.sqlite
+*.db
+
+# Backup files
+*.backup
+*.bak
+*~
+*.old
+index-old.php
+index-clean.php
+
+# Build files
+/build/
+/dist/
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Test files
+/tests/coverage/
+.phpunit.result.cache
+
+# Local setup files
+setup-local.php
