@@ -99,6 +99,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            padding: 8px 0;
         }
         
         .circle-container::-webkit-scrollbar {
@@ -108,11 +109,17 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         .circle-card {
             scroll-snap-align: center;
             flex-shrink: 0;
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             position: relative;
             cursor: pointer;
             user-select: none;
+            margin: 0 6px;
+            transition: transform 0.2s ease;
+        }
+        
+        .circle-card:active {
+            transform: scale(0.95);
         }
         
         .circle-ring {
@@ -121,43 +128,83 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             border-radius: 50%;
             padding: 3px;
             background: linear-gradient(135deg, var(--flow-primary) 0%, #FF8A65 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.35), 
+                        0 2px 4px rgba(255, 107, 53, 0.2);
         }
         
         .circle-ring.warning {
             background: linear-gradient(135deg, var(--flow-warning) 0%, #FFA502 100%);
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.35),
+                        0 2px 4px rgba(253, 203, 110, 0.2);
         }
         
         .circle-ring.critical {
             background: linear-gradient(135deg, var(--flow-critical) 0%, #FF4757 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.35),
+                        0 2px 4px rgba(255, 107, 107, 0.2);
+            animation: pulse-ring 2s ease-in-out infinite;
         }
         
         .circle-content {
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF 0%, #FAFAFA 100%);
             border-radius: 50%;
-            width: 100%;
-            height: 100%;
+            width: calc(100% - 6px);
+            height: calc(100% - 6px);
+            margin: 3px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--flow-text);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
         /* Stack - Vertical Moment Feed */
         .stack-card {
-            background: var(--flow-card);
+            background: linear-gradient(135deg, #FFFFFF 0%, #FCFCFC 100%);
             border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1.5px solid rgba(255, 107, 53, 0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06),
+                        0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             user-select: none;
+            position: relative;
+        }
+        
+        .stack-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--flow-primary) 0%, #FF8A65 100%);
+            border-radius: 16px 16px 0 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .stack-card:hover::before {
+            opacity: 1;
         }
         
         .stack-card:active {
-            transform: scale(0.98);
+            transform: scale(0.98) translateY(1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        
+        .stack-card:hover {
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.12),
+                        0 3px 8px rgba(0,0,0,0.04);
+            border-color: rgba(255, 107, 53, 0.25);
+            transform: translateY(-2px);
         }
         
         /* Swipe Gesture Support */
@@ -337,9 +384,10 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     
     <!-- Circle - Horizontal Scrollable Priority Journeys -->
     <?php if (!empty($circleJourneys)): ?>
-    <section class="bg-white border-b border-gray-100 py-4">
-        <div class="px-4 mb-3">
-            <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Circle</h2>
+    <section class="bg-gradient-to-r from-orange-50 via-white to-pink-50 border-b border-orange-100 py-5">
+        <div class="px-4 mb-3 flex items-center justify-between">
+            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Circle</h2>
+            <span class="text-xs text-orange-600 font-medium"><?php echo count($circleJourneys); ?> active</span>
         </div>
         
         <div class="circle-container flex space-x-4 px-4 overflow-x-auto">
@@ -372,10 +420,12 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             
             <!-- Add New Journey Circle -->
             <div class="circle-card" onclick="createJourney()">
-                <div class="circle-content border-2 border-dashed border-gray-300">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.03) 0%, rgba(255, 138, 101, 0.03) 100%);">
+                    <div class="circle-content" style="background: transparent; border: none;">
+                        <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
