@@ -64,3 +64,5 @@ desktop.ini
 
 # Local setup files
 setup-local.php
+
+/includes/config.php
