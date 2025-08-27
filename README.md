@@ -20,9 +20,11 @@ FlowJM reimagines project management for solo freelancers by:
 ## Key Features
 
 ### The Lookout (Dashboard)
-Your daily command center showing:
-- **Circle** - Priority journeys that need attention
-- **Stacks** - Scrollable feed of all recent moments
+Your daily command center with a **beautiful desktop-constrained design**:
+- **Circle** - Priority journeys that need attention (horizontal scroll like Instagram stories)
+- **Stack** - Scrollable feed of all recent moments
+- **Camp Drawer** - Slides in from right with full journey list
+- **Mobile-first but desktop-beautiful** - Constrained width, centered design that looks intentional on all screens
 - **Pulse Alerts** - Health indicators for overdue or blocked work
 
 ### Journeys
@@ -39,12 +41,21 @@ Single-tap progress updates that build your narrative:
 - Timestamps and context preserved
 - Swipeable actions on mobile
 
+## Design Philosophy
+
+**Desktop-Constrained Mobile-First Design**: FlowJM looks like a mobile app running in a beautiful frame on desktop. The app uses a constrained max-width (448px) centered on desktop with gorgeous backgrounds and depth, similar to how Instagram or Twitter appear on web.
+
+- **Mobile**: Full-width, native mobile experience
+- **Desktop**: Constrained width, centered, with beautiful shadows and depth
+- **Responsive**: Seamless between mobile and desktop
+- **Professional**: No more stretched-across-the-screen ugliness
+
 ## Tech Stack
 
 - **Backend**: PHP 7.4+ (vanilla, no framework)
 - **Database**: MySQL 5.7+
 - **Frontend**: Vanilla JavaScript ES6+
-- **CSS**: TailwindCSS 3.x (CDN)
+- **CSS**: TailwindCSS 3.x (CDN) + custom design system
 - **Hosting**: cPanel shared hosting compatible
 - **No build process required** - Direct deployment via FTP
 

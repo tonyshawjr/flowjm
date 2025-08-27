@@ -49,6 +49,10 @@ error_log
 *.old
 index-old.php
 index-clean.php
+index-backup.php
+index-flow.php
+index-lookout.php
+BACKUPS.md
 
 # Build files
 /build/
