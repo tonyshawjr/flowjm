@@ -434,8 +434,11 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     
     <!-- Stack - Vertical Moment Feed -->
     <main class="px-4 py-4 pb-24">
-        <div class="mb-4">
-            <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Stack</h2>
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Stack</h2>
+            <?php if (!empty($stackMoments)): ?>
+            <span class="text-xs text-gray-500">Latest moments</span>
+            <?php endif; ?>
         </div>
         
         <div id="stack-feed">
@@ -444,7 +447,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 <div class="stack-card swipeable" data-moment-id="<?php echo $moment['id']; ?>">
                     <!-- Journey Badge -->
                     <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">
+                        <span class="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-bold uppercase tracking-wide rounded-full">
                             <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
                         </span>
                         <span class="text-xs text-gray-400">
@@ -453,17 +456,17 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                     </div>
                     
                     <!-- Moment Content -->
-                    <p class="text-gray-800 leading-relaxed">
+                    <p class="text-gray-800 leading-relaxed text-base font-medium">
                         <?php echo escapeContent($moment['content']); ?>
                     </p>
                     
                     <!-- Moment Type Badge -->
                     <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
                     <div class="mt-3">
-                        <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
-                            <?php echo $moment['type'] == 'milestone' ? 'bg-green-100 text-green-700' : ''; ?>
-                            <?php echo $moment['type'] == 'blocker' ? 'bg-red-100 text-red-700' : ''; ?>
-                            <?php echo $moment['type'] == 'note' ? 'bg-gray-100 text-gray-700' : ''; ?>">
+                        <span class="inline-flex px-3 py-1.5 text-xs font-bold rounded-full shadow-sm
+                            <?php echo $moment['type'] == 'milestone' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' : ''; ?>
+                            <?php echo $moment['type'] == 'blocker' ? 'bg-gradient-to-r from-red-400 to-red-600 text-white' : ''; ?>
+                            <?php echo $moment['type'] == 'note' ? 'bg-gradient-to-r from-gray-400 to-gray-600 text-white' : ''; ?>">
                             <?php echo ucfirst($moment['type']); ?>
                         </span>
                     </div>
