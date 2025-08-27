@@ -67,7 +67,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Desktop-Constrained Mobile-First Design */
+        /* Responsive Desktop-First Design */
         :root {
             --flow-bg: #FAFAF8;
             --flow-card: #FFFFFF;
@@ -87,90 +87,96 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Desktop Background with Depth */
+        /* Full Desktop Background */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--flow-bg);
             min-height: 100vh;
             overflow-x: hidden;
             padding: 0;
         }
         
-        /* App Container - Mobile App in Desktop Frame */
+        /* App Container - Full Width Desktop */
         .app-container {
-            max-width: 448px; /* Mobile width */
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
             min-height: 100vh;
             background: var(--flow-bg);
-            box-shadow: 
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                0 4px 24px rgba(0, 0, 0, 0.15),
-                0 8px 48px rgba(0, 0, 0, 0.1);
             position: relative;
             padding-top: var(--safe-area-inset-top);
             padding-bottom: var(--safe-area-inset-bottom);
         }
         
-        /* Mobile breakpoint - full width */
-        @media (max-width: 448px) {
-            body {
-                background: var(--flow-bg);
-            }
+        /* Mobile breakpoint - maintain mobile layout */
+        @media (max-width: 768px) {
             .app-container {
                 max-width: 100%;
-                box-shadow: none;
+            }
+            
+            /* Mobile-specific adjustments */
+            .mobile-nav {
+                display: flex;
+            }
+            
+            .desktop-nav {
+                display: none;
             }
         }
         
-        /* Desktop breakpoint - add breathing room */
+        /* Desktop breakpoint - full desktop layout */
         @media (min-width: 768px) {
             .app-container {
-                margin: 20px auto;
-                min-height: calc(100vh - 40px);
-                border-radius: 24px;
-                overflow: hidden;
+                margin: 0;
+                min-height: 100vh;
+                border-radius: 0;
+                overflow: visible;
             }
             
-            /* Desktop-specific enhancements */
+            /* Hide mobile nav on desktop */
             .mobile-nav {
-                left: 50%;
-                right: auto;
-                width: 448px;
-                transform: translateX(-50%);
-                border-radius: 0 0 24px 24px;
+                display: none;
             }
             
+            .desktop-nav {
+                display: flex;
+            }
+            
+            /* Desktop FAB positioning */
             .fab {
-                left: 50%;
-                right: auto;
-                transform: translateX(174px); /* Half of 448px - half of FAB width - margin */
+                right: 32px;
+                transform: none;
             }
             
             .fab:hover {
-                transform: translateX(174px) translateY(-2px) scale(1.05);
+                transform: translateY(-2px) scale(1.05);
             }
             
             .fab:active {
-                transform: translateX(174px) translateY(0) scale(0.98);
+                transform: translateY(0) scale(0.98);
             }
             
-            /* Desktop Camp Drawer positioning */
+            /* Desktop Camp Drawer full width */
             .camp-drawer {
-                left: 50%;
-                right: auto;
-                transform: translateX(-50%) translateX(448px);
+                left: auto;
+                right: 0;
+                transform: translateX(100%);
+                max-width: 420px;
+                width: 420px;
             }
             
             .camp-drawer.open {
-                transform: translateX(-50%) translateX(63px); /* Show within container bounds */
+                transform: translateX(0);
             }
             
-            /* Desktop Quick Add positioning */
+            /* Desktop Quick Add centered */
             .quick-add-sheet {
                 left: 50%;
                 right: auto;
-                width: 448px;
+                width: 600px;
+                max-width: 90vw;
                 transform: translateX(-50%) translateY(100%);
-                border-radius: 24px 24px 0 0;
+                border-radius: 16px;
+                margin-bottom: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             }
             
             .quick-add-sheet.open {
@@ -178,7 +184,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             }
         }
         
-        /* Circle - Horizontal Scrollable Stories */
+        /* Circle - Responsive Journey Cards */
         .circle-container {
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
@@ -200,6 +206,26 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             user-select: none;
             margin: 0 6px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Desktop Circle - Larger Cards in Grid */
+        @media (min-width: 768px) {
+            .circle-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 24px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 16px 0;
+                overflow: visible;
+            }
+            
+            .circle-card {
+                width: 140px;
+                height: 140px;
+                margin: 0;
+                scroll-snap-align: none;
+            }
         }
         
         .circle-card:hover {
@@ -263,7 +289,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9);
         }
         
-        /* Stack - Vertical Moment Feed */
+        /* Stack - Responsive Moment Feed */
         .stack-card {
             background: linear-gradient(135deg, #FFFFFF 0%, #FCFCFC 100%);
             border-radius: 20px;
@@ -279,6 +305,21 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             user-select: none;
             position: relative;
             backdrop-filter: blur(10px);
+        }
+        
+        /* Desktop Stack - Grid Layout */
+        @media (min-width: 1024px) {
+            .stack-feed-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .stack-card {
+                margin-bottom: 0;
+            }
         }
         
         .stack-card::before {
