@@ -65,4 +65,6 @@ desktop.ini
 # Local setup files
 setup-local.php
 
+# Database configuration - keep credentials private
 /includes/config.php
+includes/config.local.php

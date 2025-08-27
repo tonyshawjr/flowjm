@@ -55,23 +55,22 @@ Single-tap progress updates that build your narrative:
    git clone https://github.com/tonyshawjr/flowjm.git
    ```
 
-2. Upload files to your web server via FTP or cPanel
+2. Configure the application:
+   ```bash
+   # Copy the sample config
+   cp includes/config.sample.php includes/config.php
+   
+   # Edit includes/config.php with your database credentials
+   ```
 
 3. Create MySQL database and import schema:
    ```sql
    mysql -u username -p database_name < schema.sql
    ```
 
-4. Configure database connection:
-   ```php
-   // config/database.php
-   define('DB_HOST', 'localhost');
-   define('DB_NAME', 'your_database');
-   define('DB_USER', 'your_username');
-   define('DB_PASS', 'your_password');
-   ```
+4. Upload files to your web server via FTP or cPanel
 
-5. Navigate to your domain to begin setup
+5. Navigate to your domain and register your first account
 
 ## Development
 
