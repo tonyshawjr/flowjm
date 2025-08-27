@@ -366,7 +366,7 @@ $todaysFocus = array_filter($circleJourneys, function($j) {
                                         <span class="text-xs text-gray-400">
                                             <?php echo time_ago($moment['created_at']); ?>
                                         </span>
-                                        <?php if ($moment['type'] == 'milestone'): ?>
+                                        <?php if (!empty($moment['type']) && $moment['type'] == 'milestone'): ?>
                                         <span class="px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded-full">
                                             Milestone
                                         </span>
@@ -403,9 +403,14 @@ $todaysFocus = array_filter($circleJourneys, function($j) {
                             <span class="text-sm text-gray-600">Healthy</span>
                             <div class="flex items-center space-x-2">
                                 <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-green-500" style="width: <?php echo ($journeyStats['healthy_journeys'] / max($journeyStats['active_journeys'], 1)) * 100; ?>%"></div>
+                                    <?php 
+                                    $healthyCount = isset($journeyStats['healthy_journeys']) ? $journeyStats['healthy_journeys'] : 0;
+                                    $activeCount = isset($journeyStats['active_journeys']) && $journeyStats['active_journeys'] > 0 ? $journeyStats['active_journeys'] : 1;
+                                    $healthyPercent = ($healthyCount / $activeCount) * 100;
+                                    ?>
+                                    <div class="h-full bg-green-500" style="width: <?php echo $healthyPercent; ?>%"></div>
                                 </div>
-                                <span class="text-sm font-medium"><?php echo $journeyStats['healthy_journeys'] ?? 0; ?></span>
+                                <span class="text-sm font-medium"><?php echo $healthyCount; ?></span>
                             </div>
                         </div>
                         
@@ -413,9 +418,13 @@ $todaysFocus = array_filter($circleJourneys, function($j) {
                             <span class="text-sm text-gray-600">Warning</span>
                             <div class="flex items-center space-x-2">
                                 <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-yellow-500" style="width: <?php echo ($journeyStats['warning_journeys'] / max($journeyStats['active_journeys'], 1)) * 100; ?>%"></div>
+                                    <?php 
+                                    $warningCount = isset($journeyStats['warning_journeys']) ? $journeyStats['warning_journeys'] : 0;
+                                    $warningPercent = ($warningCount / $activeCount) * 100;
+                                    ?>
+                                    <div class="h-full bg-yellow-500" style="width: <?php echo $warningPercent; ?>%"></div>
                                 </div>
-                                <span class="text-sm font-medium"><?php echo $journeyStats['warning_journeys'] ?? 0; ?></span>
+                                <span class="text-sm font-medium"><?php echo $warningCount; ?></span>
                             </div>
                         </div>
                         
@@ -423,9 +432,13 @@ $todaysFocus = array_filter($circleJourneys, function($j) {
                             <span class="text-sm text-gray-600">Critical</span>
                             <div class="flex items-center space-x-2">
                                 <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-red-500" style="width: <?php echo ($journeyStats['critical_journeys'] / max($journeyStats['active_journeys'], 1)) * 100; ?>%"></div>
+                                    <?php 
+                                    $criticalCount = isset($journeyStats['critical_journeys']) ? $journeyStats['critical_journeys'] : 0;
+                                    $criticalPercent = ($criticalCount / $activeCount) * 100;
+                                    ?>
+                                    <div class="h-full bg-red-500" style="width: <?php echo $criticalPercent; ?>%"></div>
                                 </div>
-                                <span class="text-sm font-medium"><?php echo $journeyStats['critical_journeys'] ?? 0; ?></span>
+                                <span class="text-sm font-medium"><?php echo $criticalCount; ?></span>
                             </div>
                         </div>
                     </div>
