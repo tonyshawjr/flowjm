@@ -132,13 +132,13 @@
           }
 
           .section-card {
-              background: rgba(255, 255, 255, 0.06);
-              backdrop-filter: blur(10px);
-              -webkit-backdrop-filter: blur(10px);
-              border: 1px solid rgba(255, 255, 255, 0.08);
-              border-radius: 24px;
-              padding: 32px;
+              padding: 32px 0;
               margin-bottom: 32px;
+          }
+          
+          .circle-section {
+              padding: 0;
+              margin-bottom: 48px;
           }
 
           /* Circle Section - Journey Cards */
@@ -156,12 +156,12 @@
           }
 
           .section-icon-circle {
-              width: 24px;
-              height: 24px;
-              border: 1.5px solid #9CA3AF;
+              width: 28px;
+              height: 28px;
+              border: 2px solid rgba(255, 255, 255, 0.3);
               border-radius: 50%;
               display: inline-block;
-              margin-right: 16px;
+              margin-right: 12px;
           }
 
           .section-icon-pulse {
@@ -179,8 +179,8 @@
           }
 
           .section-title {
-              font-size: 24px;
-              font-weight: 600;
+              font-size: 28px;
+              font-weight: 500;
               color: var(--flow-text);
               display: flex;
               align-items: center;
@@ -188,23 +188,17 @@
           }
 
           .journey-card {
-              background: rgba(255, 255, 255, 0.05);
-              backdrop-filter: blur(8px);
-              border: 1px solid rgba(255, 255, 255, 0.08);
-              border-radius: 16px;
-              padding: 24px;
+              background: rgba(255, 255, 255, 0.03);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              border-radius: 20px;
+              padding: 28px;
               cursor: pointer;
-              transition: all 0.2s ease;
               height: 100%;
-              min-height: 180px;
+              min-height: 200px;
               display: flex;
               flex-direction: column;
-          }
-
-          .journey-card:hover {
-              background: rgba(255, 255, 255, 0.08);
-              transform: translateY(-2px);
-              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
           }
 
           .journey-header {
@@ -237,31 +231,25 @@
           .add-journey-card {
               background: transparent;
               backdrop-filter: none;
-              border: 2px dashed rgba(255, 255, 255, 0.2);
+              border: 2px dashed rgba(255, 255, 255, 0.15);
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
               text-align: center;
-              min-height: 140px;
-          }
-
-          .add-journey-card:hover {
-              border-color: rgba(255, 255, 255, 0.4);
-              background: rgba(255, 255, 255, 0.02);
           }
 
           .add-journey-icon {
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              background: rgba(255, 255, 255, 0.1);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin-bottom: 12px;
-              font-size: 24px;
-              color: rgba(255, 255, 255, 0.5);
+              font-size: 32px;
+              color: rgba(255, 255, 255, 0.3);
+              margin-bottom: 8px;
+              font-weight: 300;
+          }
+          
+          .add-journey-text {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.4);
+              font-weight: 400;
           }
 
           /* Empty State Styles */
@@ -320,21 +308,14 @@
 
           /* Buttons */
           .btn-primary {
-              background: linear-gradient(135deg, var(--flow-purple-primary), var(--flow-purple-accent));
+              background: rgba(107, 70, 193, 0.8);
               color: white;
               border: none;
-              padding: 12px 24px;
+              padding: 10px 20px;
               border-radius: 12px;
-              font-weight: 600;
+              font-weight: 500;
               font-size: 14px;
               cursor: pointer;
-              transition: all 0.2s ease;
-              box-shadow: 0 4px 16px rgba(107, 70, 193, 0.3);
-          }
-
-          .btn-primary:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 6px 20px rgba(107, 70, 193, 0.4);
           }
 
           .btn-secondary {
@@ -436,7 +417,7 @@
           }
 
           .journey-meta-item svg {
-              opacity: 0.6;
+              opacity: 0.4;
               flex-shrink: 0;
           }
       </style>
@@ -470,7 +451,7 @@
           </div>
 
           <!-- Circle Section -->
-          <section class="section-card">
+          <section class="circle-section">
               <div class="circle-header">
                   <h2 class="section-title">
                       <span class="section-icon-circle"></span>
@@ -522,7 +503,7 @@
                       <!-- Add Journey Card -->
                       <div class="journey-card add-journey-card" onclick="createJourney()">
                           <div class="add-journey-icon">+</div>
-                          <div class="text-sm text-gray-400">Add Journey</div>
+                          <div class="add-journey-text">Add Journey</div>
                       </div>
                   </div>
               <?php else: ?>
