@@ -196,13 +196,42 @@
               cursor: pointer;
               transition: all 0.2s ease;
               height: 100%;
-              min-height: 140px;
+              min-height: 180px;
+              display: flex;
+              flex-direction: column;
           }
 
           .journey-card:hover {
               background: rgba(255, 255, 255, 0.08);
               transform: translateY(-2px);
               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          }
+
+          .journey-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: auto;
+          }
+
+          .journey-info {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              flex: 1;
+          }
+
+          .journey-title {
+              font-size: 18px;
+              font-weight: 600;
+              color: var(--flow-text);
+              line-height: 1.3;
+          }
+
+          .journey-client {
+              font-size: 14px;
+              color: var(--flow-text-secondary);
+              margin-top: 4px;
           }
 
           .add-journey-card {
@@ -392,21 +421,22 @@
           /* Journey Status Pills */
           .journey-meta {
               display: flex;
-              align-items: center;
-              gap: 20px;
-              margin-top: 12px;
-              font-size: 14px;
-              color: #B8BCC8;
+              flex-direction: column;
+              gap: 12px;
+              margin-top: auto;
+              padding-top: 16px;
           }
 
           .journey-meta-item {
               display: flex;
               align-items: center;
-              gap: 6px;
+              gap: 8px;
+              font-size: 14px;
+              color: var(--flow-text-secondary);
           }
 
           .journey-meta-item svg {
-              opacity: 0.7;
+              opacity: 0.6;
               flex-shrink: 0;
           }
       </style>
@@ -455,10 +485,10 @@
                   <div class="journey-grid">
                       <?php foreach ($circleJourneys as $circleJourney): ?>
                       <div class="journey-card" onclick="viewJourney(<?php echo $circleJourney['id']; ?>)">
-                          <div class="flex justify-between items-start">
-                              <div class="flex-1">
-                                  <h3 class="text-lg font-semibold mb-1"><?php echo escapeContent($circleJourney['title']); ?></h3>
-                                  <p class="text-sm text-gray-400 mb-3"><?php echo escapeContent($circleJourney['client_name'] ?? 'Personal Project'); ?></p>
+                          <div class="journey-header">
+                              <div class="journey-info">
+                                  <div class="journey-title"><?php echo escapeContent($circleJourney['title']); ?></div>
+                                  <div class="journey-client"><?php echo escapeContent($circleJourney['client_name'] ?? 'Personal Project'); ?></div>
                               </div>
                               <span class="status-dot <?php
                                   echo $circleJourney['pulse_status'] == 'critical' ? 'status-critical' :
@@ -467,20 +497,20 @@
                           </div>
                           <div class="journey-meta">
                               <div class="journey-meta-item">
-                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
                                       <circle cx="9" cy="9" r="7"/>
                                       <path d="M9 5v4l2.5 2.5"/>
                                   </svg>
                                   <span>Due <?php echo date('M j', strtotime($circleJourney['target_date'] ?? '+7 days')); ?></span>
                               </div>
                               <div class="journey-meta-item">
-                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
                                       <path d="M9 3v12M6 6h4.5a2.5 2.5 0 0 1 0 5c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5H6"/>
                                   </svg>
                                   <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0, '.', ','); ?></span>
                               </div>
                               <div class="journey-meta-item">
-                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
                                       <path d="M3 9h3l2-5 4 10 2-5h3"/>
                                   </svg>
                                   <span><?php echo $circleJourney['moment_count'] ?? 0; ?> moments</span>
