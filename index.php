@@ -440,6 +440,11 @@
               background: rgba(255, 255, 255, 0.12);
               border-color: rgba(255, 255, 255, 0.2);
           }
+          
+          /* Dropdown Styles */
+          .dropdown-item:hover {
+              background: rgba(255, 255, 255, 0.1) !important;
+          }
 
           /* Status Indicator */
           .status-dot {
@@ -493,16 +498,42 @@
                   <div class="nav-subtitle">Journey Management</div>
               </div>
               <div class="nav-actions">
-                  <div class="icon-btn">
-                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                          <circle cx="10" cy="10" r="7"/>
-                      </svg>
-                  </div>
-                  <button class="icon-btn">
-                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M12 2v20M2 12h20"/>
+                  <!-- Camp Button -->
+                  <button class="icon-btn" onclick="viewFullCamp()" title="View Camp">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3.5 21 14 3"/>
+                          <path d="M20.5 21 10 3"/>
+                          <path d="M15.5 21 12 15l-3.5 6"/>
+                          <path d="M2 21h20"/>
                       </svg>
                   </button>
+                  
+                  <!-- Avatar Dropdown -->
+                  <div class="dropdown-container" style="position: relative;">
+                      <button class="icon-btn" onclick="toggleUserMenu()" title="User Menu">
+                          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="10" cy="10" r="7"/>
+                              <circle cx="10" cy="8" r="3"/>
+                              <path d="M4 17c0-3 2.5-5 6-5s6 2 6 5"/>
+                          </svg>
+                      </button>
+                      <div id="user-dropdown" class="dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 8px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; min-width: 200px; padding: 8px 0; z-index: 1000;">
+                          <a href="/profile.php" class="dropdown-item" style="display: block; padding: 10px 16px; color: white; text-decoration: none; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                                  <path d="M12 2H4a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2z"/>
+                                  <path d="M8 10V6M6 8h4"/>
+                              </svg>
+                              Preferences
+                          </a>
+                          <div style="height: 1px; background: rgba(255, 255, 255, 0.1); margin: 8px 0;"></div>
+                          <a href="/logout.php" class="dropdown-item" style="display: block; padding: 10px 16px; color: white; text-decoration: none; font-size: 14px; cursor: pointer; transition: background 0.2s;">
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                              </svg>
+                              Logout
+                          </a>
+                      </div>
+                  </div>
               </div>
           </nav>
 
@@ -669,6 +700,19 @@
       </div>
 
       <script>
+      // User Menu Dropdown
+      function toggleUserMenu() {
+          const dropdown = document.getElementById('user-dropdown');
+          dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+      }
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+          if (!event.target.closest('.dropdown-container')) {
+              document.getElementById('user-dropdown').style.display = 'none';
+          }
+      });
+      
       // Quick Add Functions
       function openQuickAdd() {
           document.getElementById('quick-add-modal').style.display = 'flex';
