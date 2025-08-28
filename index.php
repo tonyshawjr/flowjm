@@ -67,38 +67,47 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Responsive Desktop-First Design */
+        /* Professional Desktop-First Design System */
         :root {
-            --flow-bg: #FAFAF8;
+            --flow-bg: linear-gradient(135deg, #FAFAF9 0%, #F7F6F3 100%);
             --flow-card: #FFFFFF;
             --flow-primary: #FF6B35;
-            --flow-text: #2D3436;
-            --flow-secondary: #636E72;
-            --flow-border: #E1E4E8;
+            --flow-text: #1F2937;
+            --flow-secondary: #6B7280;
+            --flow-border: #E5E7EB;
             --flow-success: #00B894;
             --flow-warning: #FDCB6E;
             --flow-critical: #FF6B6B;
+            --flow-green: #10B981;
+            --flow-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --flow-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --flow-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --flow-shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.16);
             --safe-area-inset-top: env(safe-area-inset-top);
             --safe-area-inset-bottom: env(safe-area-inset-bottom);
         }
         
         * {
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Full Desktop Background */
+        /* Professional Desktop Background */
         body {
             background: var(--flow-bg);
             min-height: 100vh;
             overflow-x: hidden;
             padding: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
-        /* App Container - Full Width Desktop */
+        /* Professional Desktop App Container */
         .app-container {
             width: 100%;
-            max-width: 100%;
             min-height: 100vh;
             background: var(--flow-bg);
             position: relative;
@@ -106,32 +115,24 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             padding-bottom: var(--safe-area-inset-bottom);
         }
         
-        /* Mobile breakpoint - maintain mobile layout */
-        @media (max-width: 768px) {
-            .app-container {
-                max-width: 100%;
-            }
-            
-            /* Mobile-specific adjustments */
+        /* Responsive Breakpoints */
+        @media (max-width: 767px) {
+            /* Mobile Layout */
             .mobile-nav {
                 display: flex;
             }
             
             .desktop-nav {
                 display: none;
+            }
+            
+            body {
+                font-size: 14px;
             }
         }
         
-        /* Desktop breakpoint - full desktop layout */
-        @media (min-width: 768px) {
-            .app-container {
-                margin: 0;
-                min-height: 100vh;
-                border-radius: 0;
-                overflow: visible;
-            }
-            
-            /* Hide mobile nav on desktop */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            /* Tablet Layout */
             .mobile-nav {
                 display: none;
             }
@@ -140,43 +141,66 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 display: flex;
             }
             
-            /* Desktop FAB positioning */
+            body {
+                font-size: 15px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            /* Desktop Layout */
+            .mobile-nav {
+                display: none;
+            }
+            
+            .desktop-nav {
+                display: flex;
+            }
+            
+            body {
+                font-size: 16px;
+            }
+            
+            /* Professional Desktop Spacing */
+            .desktop-spacing {
+                padding: 32px;
+            }
+            
+            /* Desktop FAB */
             .fab {
-                right: 32px;
-                transform: none;
+                right: 40px;
+                bottom: 40px;
+                width: 72px;
+                height: 72px;
             }
             
             .fab:hover {
-                transform: translateY(-2px) scale(1.05);
+                transform: translateY(-4px) scale(1.08);
+                box-shadow: var(--flow-shadow-xl), 0 0 0 8px rgba(255, 107, 53, 0.1);
             }
             
-            .fab:active {
-                transform: translateY(0) scale(0.98);
-            }
-            
-            /* Desktop Camp Drawer full width */
+            /* Desktop Modals */
             .camp-drawer {
                 left: auto;
                 right: 0;
                 transform: translateX(100%);
-                max-width: 420px;
-                width: 420px;
+                max-width: 480px;
+                width: 480px;
+                box-shadow: var(--flow-shadow-xl);
             }
             
             .camp-drawer.open {
                 transform: translateX(0);
             }
             
-            /* Desktop Quick Add centered */
             .quick-add-sheet {
                 left: 50%;
                 right: auto;
                 width: 600px;
                 max-width: 90vw;
                 transform: translateX(-50%) translateY(100%);
-                border-radius: 16px;
-                margin-bottom: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                border-radius: 24px;
+                margin-bottom: 40px;
+                box-shadow: var(--flow-shadow-xl);
             }
             
             .quick-add-sheet.open {
@@ -184,12 +208,12 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             }
         }
         
-        /* Circle - Responsive Journey Cards */
+        /* Rich Visual Journey Cards */
         .circle-container {
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
-            padding: 8px 0;
+            padding: 16px 0;
         }
         
         .circle-container::-webkit-scrollbar {
@@ -199,54 +223,91 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         .circle-card {
             scroll-snap-align: center;
             flex-shrink: 0;
-            width: 85px;
-            height: 85px;
+            width: 100px;
             position: relative;
             cursor: pointer;
             user-select: none;
-            margin: 0 6px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 8px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
-        /* Desktop Circle - Larger Cards in Grid */
+        /* Tablet Circle Layout */
         @media (min-width: 768px) {
             .circle-container {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 24px;
-                max-width: 1200px;
+                max-width: 1400px;
                 margin: 0 auto;
-                padding: 16px 0;
+                padding: 24px 0;
                 overflow: visible;
             }
             
             .circle-card {
-                width: 140px;
+                width: 200px;
                 height: 140px;
                 margin: 0;
                 scroll-snap-align: none;
+                border-radius: 20px;
+            }
+        }
+        
+        /* Desktop Circle Layout - Premium Journey Cards */
+        @media (min-width: 1024px) {
+            .circle-container {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 32px;
+                max-width: 1600px;
+                padding: 32px 0;
+            }
+            
+            .circle-card {
+                width: 240px;
+                height: 160px;
+                border-radius: 24px;
             }
         }
         
         .circle-card:hover {
-            transform: translateY(-2px) scale(1.05);
+            transform: translateY(-4px) scale(1.03);
         }
         
         .circle-card:active {
-            transform: translateY(0) scale(0.98);
+            transform: translateY(-2px) scale(0.98);
         }
         
+        /* Mobile Circle Ring */
         .circle-ring {
             position: absolute;
             inset: -3px;
             border-radius: 50%;
             padding: 3px;
             background: linear-gradient(135deg, var(--flow-primary) 0%, #FF8A65 100%);
-            box-shadow: 
-                0 4px 20px rgba(255, 107, 53, 0.4), 
-                0 2px 8px rgba(255, 107, 53, 0.3),
-                0 1px 3px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: var(--flow-shadow-md);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* Desktop Journey Card Design */
+        @media (min-width: 768px) {
+            .circle-ring {
+                inset: 0;
+                border-radius: 20px;
+                padding: 0;
+                background: linear-gradient(135deg, #FFFFFF 0%, #FEFEFE 100%);
+                border: 2px solid rgba(255, 107, 53, 0.1);
+                box-shadow: var(--flow-shadow-lg);
+            }
+            
+            .circle-card:hover .circle-ring {
+                box-shadow: var(--flow-shadow-xl);
+                border-color: rgba(255, 107, 53, 0.3);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .circle-ring {
+                border-radius: 24px;
+            }
         }
         
         .circle-card:hover .circle-ring {
@@ -269,6 +330,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             animation: pulse-ring 2s ease-in-out infinite;
         }
         
+        /* Mobile Circle Content */
         .circle-content {
             background: linear-gradient(135deg, #FFFFFF 0%, #FEFEFE 100%);
             border-radius: 50%;
@@ -282,43 +344,134 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             position: relative;
             overflow: hidden;
             font-weight: 700;
-            font-size: 20px;
+            font-size: 18px;
             color: var(--flow-text);
             text-shadow: 0 1px 2px rgba(0,0,0,0.05);
             border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9);
         }
         
-        /* Stack - Responsive Moment Feed */
+        /* Desktop Journey Card Content */
+        @media (min-width: 768px) {
+            .circle-content {
+                background: transparent;
+                border-radius: 18px;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 20px;
+                align-items: flex-start;
+                justify-content: space-between;
+                font-size: 14px;
+                font-weight: 600;
+                border: none;
+                box-shadow: none;
+                text-shadow: none;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .circle-content {
+                border-radius: 22px;
+                padding: 24px;
+                font-size: 16px;
+            }
+        }
+        
+        /* Journey Card Header */
+        .journey-card-header {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .journey-card-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+        }
+        
+        /* Journey Card Body */
+        .journey-card-body {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .journey-card-body {
+                display: block;
+                width: 100%;
+            }
+        }
+        
+        /* Journey Card Footer */
+        .journey-card-footer {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .journey-card-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                margin-top: auto;
+                padding-top: 12px;
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+            }
+        }
+        
+        /* Professional Moment Cards */
         .stack-card {
             background: linear-gradient(135deg, #FFFFFF 0%, #FCFCFC 100%);
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 16px;
+            padding: 20px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255, 107, 53, 0.1);
-            box-shadow: 
-                0 2px 12px rgba(0,0,0,0.04),
-                0 1px 6px rgba(0,0,0,0.03),
-                0 0 0 1px rgba(255, 255, 255, 0.9);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 107, 53, 0.08);
+            box-shadow: var(--flow-shadow-sm);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
             user-select: none;
             position: relative;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
         }
         
-        /* Desktop Stack - Grid Layout */
-        @media (min-width: 1024px) {
+        /* Tablet Stack Layout */
+        @media (min-width: 768px) {
             .stack-feed-container {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 24px;
-                max-width: 1200px;
+                max-width: 1400px;
                 margin: 0 auto;
             }
             
             .stack-card {
+                border-radius: 20px;
+                padding: 24px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        /* Desktop Stack - Multi-Column Masonry Layout */
+        @media (min-width: 1024px) {
+            .stack-feed-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+                max-width: 1600px;
+                align-items: start;
+            }
+            
+            .stack-card {
                 margin-bottom: 0;
+                padding: 32px;
+                border-radius: 24px;
+            }
+        }
+        
+        /* Large Desktop - 3 Column Layout */
+        @media (min-width: 1440px) {
+            .stack-feed-container {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
         
@@ -345,13 +498,17 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         }
         
         .stack-card:hover {
-            box-shadow: 
-                0 8px 32px rgba(255, 107, 53, 0.15),
-                0 4px 16px rgba(0,0,0,0.08),
-                0 0 0 1px rgba(255, 107, 53, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            border-color: rgba(255, 107, 53, 0.3);
-            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--flow-shadow-lg);
+            border-color: rgba(255, 107, 53, 0.2);
+            transform: translateY(-2px) scale(1.01);
+        }
+        
+        @media (min-width: 1024px) {
+            .stack-card:hover {
+                box-shadow: var(--flow-shadow-xl);
+                border-color: rgba(255, 107, 53, 0.3);
+                transform: translateY(-4px) scale(1.02);
+            }
         }
         
         /* Swipe Gesture Support */
@@ -424,7 +581,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             animation: pulse-dot 2s ease-in-out infinite;
         }
         
-        /* Enhanced Mobile Navigation Bar */
+        /* Enhanced Mobile Navigation */
         .mobile-nav {
             position: fixed;
             bottom: 0;
@@ -432,15 +589,13 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             right: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 0 calc(8px + var(--safe-area-inset-bottom));
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 0 calc(12px + var(--safe-area-inset-bottom));
             z-index: 50;
-            box-shadow: 
-                0 -1px 0 rgba(255, 255, 255, 0.8),
-                0 -1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--flow-shadow-lg);
         }
         
-        /* Desktop navigation styles */
+        /* Professional Desktop Navigation */
         .desktop-nav {
             display: none;
         }
@@ -448,28 +603,65 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         @media (min-width: 768px) {
             .desktop-nav {
                 display: flex;
+                gap: 8px;
+            }
+            
+            .desktop-nav button {
+                position: relative;
+                padding: 12px 24px;
+                font-weight: 500;
+                font-size: 14px;
+                border-radius: 12px;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            
+            .desktop-nav button:hover {
+                background-color: rgba(255, 107, 53, 0.08);
+                color: var(--flow-primary);
+            }
+            
+            .desktop-nav button[aria-current="page"] {
+                background: linear-gradient(135deg, var(--flow-primary) 0%, #FF8A65 100%);
+                color: white;
+                box-shadow: var(--flow-shadow-md);
             }
         }
         
-        /* Enhanced Floating Action Button */
+        @media (min-width: 1024px) {
+            .desktop-nav button {
+                padding: 16px 32px;
+                font-size: 16px;
+                border-radius: 16px;
+            }
+        }
+        
+        /* Professional FAB */
         .fab {
             position: fixed;
-            bottom: calc(70px + var(--safe-area-inset-bottom));
-            right: 20px;
-            width: 56px;
-            height: 56px;
+            bottom: calc(80px + var(--safe-area-inset-bottom));
+            right: 24px;
+            width: 64px;
+            height: 64px;
             background: linear-gradient(135deg, var(--flow-primary) 0%, #FF8A65 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
-                0 4px 20px rgba(255, 107, 53, 0.4),
-                0 2px 8px rgba(255, 107, 53, 0.3),
-                0 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--flow-shadow-lg);
             z-index: 49;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: none;
+            outline: none;
+        }
+        
+        .fab:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--flow-shadow-xl);
+        }
+        
+        .fab:active {
+            transform: translateY(0) scale(0.95);
         }
         
         /* Desktop FAB positioning */
@@ -569,76 +761,177 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             border: 0;
         }
         
-        /* Desktop scroll improvements and enhancements */
+        /* Professional Desktop Enhancements */
         @media (min-width: 768px) {
-            .app-container {
-                /* Custom scrollbar for desktop */
-                scrollbar-width: thin;
-                scrollbar-color: rgba(255, 107, 53, 0.3) transparent;
+            /* Custom scrollbar for desktop */
+            ::-webkit-scrollbar {
+                width: 8px;
             }
             
-            .app-container::-webkit-scrollbar {
-                width: 6px;
+            ::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 4px;
             }
             
-            .app-container::-webkit-scrollbar-track {
-                background: transparent;
-            }
-            
-            .app-container::-webkit-scrollbar-thumb {
+            ::-webkit-scrollbar-thumb {
                 background: rgba(255, 107, 53, 0.3);
-                border-radius: 3px;
+                border-radius: 4px;
+                transition: background 0.2s ease;
             }
             
-            .app-container::-webkit-scrollbar-thumb:hover {
+            ::-webkit-scrollbar-thumb:hover {
                 background: rgba(255, 107, 53, 0.5);
             }
             
-            /* Desktop navigation hover effects */
+            /* Professional Desktop Navigation Effects */
             .desktop-nav button {
                 position: relative;
                 overflow: hidden;
             }
             
-            .desktop-nav button::before {
+            .desktop-nav button::after {
                 content: '';
                 position: absolute;
                 bottom: 0;
-                left: 0;
+                left: 50%;
                 width: 0;
-                height: 2px;
+                height: 3px;
                 background: linear-gradient(90deg, var(--flow-primary), #FF8A65);
-                transition: width 0.3s ease;
+                border-radius: 2px 2px 0 0;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                transform: translateX(-50%);
             }
             
-            .desktop-nav button:hover::before {
+            .desktop-nav button:hover::after {
                 width: 100%;
             }
             
-            /* Better desktop card hover effects */
+            .desktop-nav button[aria-current="page"]::after {
+                width: 100%;
+                background: rgba(255, 255, 255, 0.9);
+            }
+            
+            /* Professional Card Hover Effects */
+            .circle-card {
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            
             .circle-card:hover {
-                transform: translateY(-4px) scale(1.05);
+                transform: translateY(-8px) scale(1.03);
+            }
+            
+            .stack-card {
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
             
             .stack-card:hover {
-                transform: translateY(-2px) scale(1.01);
+                transform: translateY(-4px) scale(1.01);
             }
             
-            /* Desktop-specific layout improvements */
+            /* Professional Desktop Layout */
             header {
-                border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+                border-bottom: 1px solid rgba(255, 107, 53, 0.08);
+                backdrop-filter: blur(20px);
             }
             
             /* Better desktop spacing */
             .circle-container {
-                padding: 24px;
-                gap: 32px;
+                padding: 32px 0;
+                gap: 40px;
+            }
+            
+            /* Desktop content containers */
+            .desktop-container {
+                max-width: 1600px;
+                margin: 0 auto;
+                padding: 0 48px;
+            }
+        }
+        
+        /* Ultra-wide desktop support */
+        @media (min-width: 1600px) {
+            .desktop-container {
+                padding: 0 80px;
+            }
+            
+            .circle-container {
+                gap: 48px;
             }
             
             .stack-feed-container {
-                padding: 0;
+                gap: 40px;
             }
         }
+        
+        /* Professional Focus States */
+        button:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 3px solid rgba(255, 107, 53, 0.4);
+            outline-offset: 2px;
+            border-radius: 8px;
+        }
+        
+        /* WCAG 2.1 AA Compliance */
+        .text-gray-500 {
+            color: #6B7280; /* Ensures 4.5:1 contrast ratio */
+        }
+        
+        .text-gray-600 {
+            color: #4B5563; /* Ensures 7:1 contrast ratio */
+        }
+        
+        /* Reduced motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .circle-card,
+            .stack-card {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+            
+            * {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Professional Loading States */
+        body {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+        
+        /* Staggered Card Animations */
+        .circle-card,
+        .stack-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .circle-card:nth-child(1) { animation-delay: 0.1s; }
+        .circle-card:nth-child(2) { animation-delay: 0.2s; }
+        .circle-card:nth-child(3) { animation-delay: 0.3s; }
+        .circle-card:nth-child(4) { animation-delay: 0.4s; }
+        .circle-card:nth-child(5) { animation-delay: 0.5s; }
+        .circle-card:nth-child(n+6) { animation-delay: 0.6s; }
+        
+        .stack-card:nth-child(1) { animation-delay: 0.2s; }
+        .stack-card:nth-child(2) { animation-delay: 0.3s; }
+        .stack-card:nth-child(3) { animation-delay: 0.4s; }
+        .stack-card:nth-child(4) { animation-delay: 0.5s; }
+        .stack-card:nth-child(n+5) { animation-delay: 0.6s; }
         
         /* Performance Optimizations */
         * {
@@ -706,11 +999,22 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             }
         }
         
-        /* Better text rendering */
-        body {
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
+        /* Professional Typography Scale */
+        .text-xs { font-size: 12px; line-height: 16px; }
+        .text-sm { font-size: 14px; line-height: 20px; }
+        .text-base { font-size: 16px; line-height: 24px; }
+        .text-lg { font-size: 18px; line-height: 28px; }
+        .text-xl { font-size: 20px; line-height: 28px; }
+        .text-2xl { font-size: 24px; line-height: 32px; }
+        .text-3xl { font-size: 30px; line-height: 36px; }
+        
+        @media (min-width: 1024px) {
+            .text-sm { font-size: 15px; line-height: 22px; }
+            .text-base { font-size: 17px; line-height: 26px; }
+            .text-lg { font-size: 19px; line-height: 30px; }
+            .text-xl { font-size: 22px; line-height: 30px; }
+            .text-2xl { font-size: 26px; line-height: 34px; }
+            .text-3xl { font-size: 32px; line-height: 38px; }
         }
         
         /* Enhanced mobile navbar with better touch targets */
@@ -743,64 +1047,88 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
 <body>
     <div class="app-container">
     <!-- The Lookout Header -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div class="px-4 lg:px-8 py-3 flex items-center justify-between max-w-7xl mx-auto">
-            <div class="flex items-center space-x-3">
-                <h1 class="text-xl lg:text-2xl font-bold text-gray-900">The Lookout</h1>
-                <span class="text-xs lg:text-sm text-gray-500"><?php echo date('M j'); ?></span>
+    <!-- Professional Fixed/Sticky Desktop Header -->
+    <header class="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-40 shadow-sm">
+        <div class="px-6 lg:px-12 py-4 lg:py-5 flex items-center justify-between max-w-7xl mx-auto">
+            <!-- Logo and Date -->
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl lg:text-2xl font-bold text-gray-900 tracking-tight">FlowJM</h1>
+                <div class="hidden lg:flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="text-sm text-gray-600 font-medium"><?php echo date('M j, Y'); ?></span>
+                </div>
             </div>
             
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav hidden lg:flex items-center space-x-6">
-                <button class="px-4 py-2 text-orange-500 font-medium border-b-2 border-orange-500" aria-current="page">
+            <!-- Professional Desktop Navigation -->
+            <nav class="desktop-nav hidden lg:flex items-center">
+                <button class="px-6 py-3 text-white font-semibold" aria-current="page">
                     Dashboard
                 </button>
-                <button onclick="viewJourneys()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                <button onclick="viewJourneys()" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-all duration-200">
                     Journeys
                 </button>
-                <button onclick="viewFullCamp()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                <button onclick="viewFullCamp()" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-all duration-200">
                     Camp
                 </button>
-                <button onclick="viewProfile()" class="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium hover:border-b-2 hover:border-gray-300 transition-all duration-200">
+                <button onclick="viewProfile()" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-all duration-200">
                     Profile
                 </button>
             </nav>
             
-            <!-- Mobile Tent Icon - Opens Camp Drawer -->
-            <button onclick="openCampDrawer()" class="lg:hidden p-2 hover:bg-gray-50 rounded-lg" aria-label="Open Camp Drawer">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M3 21h18L12 3 3 21zm9-13v6m0 2h.01"/>
-                </svg>
-            </button>
-            
-            <!-- Desktop Camp Button -->
-            <button onclick="openCampDrawer()" class="hidden lg:block p-2 hover:bg-gray-50 rounded-lg" aria-label="Open Camp Drawer">
-                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M3 21h18L12 3 3 21zm9-13v6m0 2h.01"/>
-                </svg>
-            </button>
+            <!-- Header Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Quick Actions (Desktop) -->
+                <div class="hidden lg:flex items-center gap-2">
+                    <button onclick="openQuickAdd()" class="p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200" title="Quick Add (⌘K)" aria-label="Quick add moment">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Mobile Camp Button -->
+                <button onclick="openCampDrawer()" class="lg:hidden p-3 hover:bg-gray-50 rounded-full" aria-label="Open Camp Drawer">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                
+                <!-- Desktop User Menu -->
+                <button onclick="openCampDrawer()" class="hidden lg:flex items-center gap-2 p-2 hover:bg-gray-50 rounded-full" aria-label="Open user menu">
+                    <div class="w-8 h-8 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-semibold"><?php echo strtoupper(substr($currentUser['name'] ?? 'U', 0, 1)); ?></span>
+                    </div>
+                </button>
+            </div>
         </div>
     </header>
     
-    <!-- Circle - Responsive Priority Journeys -->
+    <!-- Circle - Rich Visual Journey Cards -->
     <?php if (!empty($circleJourneys)): ?>
-    <section class="bg-gradient-to-r from-orange-50 via-white to-pink-50 border-b border-orange-100 py-5 lg:py-8">
-        <div class="px-4 lg:px-8 mb-3 lg:mb-6 max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-sm lg:text-lg font-bold text-gray-800 uppercase tracking-wider">Circle</h2>
-                <span class="text-xs lg:text-sm text-orange-600 font-medium"><?php echo count($circleJourneys); ?> active</span>
+    <section class="bg-gradient-to-r from-orange-50/40 via-white to-pink-50/40 border-b border-orange-100/50 py-8 lg:py-12">
+        <div class="px-6 lg:px-12 max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-6 lg:mb-8">
+                <h2 class="text-lg lg:text-2xl font-bold text-gray-900 tracking-tight">Active Journeys</h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm lg:text-base text-orange-600 font-medium"><?php echo count($circleJourneys); ?> active</span>
+                    <button onclick="createJourney()" class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium text-sm transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        New Journey
+                    </button>
+                </div>
             </div>
             
-            <div class="circle-container lg:px-0 px-4 flex lg:grid space-x-4 lg:space-x-0 overflow-x-auto lg:overflow-visible">
+            <div class="circle-container flex lg:grid space-x-4 lg:space-x-0 overflow-x-auto lg:overflow-visible px-4 lg:px-0">
                 <?php foreach ($circleJourneys as $journey): ?>
                 <?php 
                     $pulseClass = '';
                     if ($journey['pulse_status'] == 'warning') $pulseClass = 'warning';
                     if ($journey['pulse_status'] == 'critical') $pulseClass = 'critical';
                     
-                    // Get initials or first letter
+                    // Get initials for mobile
                     $initials = substr($journey['title'], 0, 1);
                     if ($journey['client_name']) {
                         $words = explode(' ', $journey['client_name']);
@@ -808,38 +1136,105 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                             $initials = substr($words[0], 0, 1) . substr($words[1], 0, 1);
                         }
                     }
+                    
+                    // Calculate days until deadline
+                    $daysLeft = '';
+                    if ($journey['deadline']) {
+                        $deadline = new DateTime($journey['deadline']);
+                        $now = new DateTime();
+                        $diff = $now->diff($deadline);
+                        if ($deadline < $now) {
+                            $daysLeft = 'Overdue';
+                        } else {
+                            $daysLeft = $diff->days . ' days left';
+                        }
+                    }
                 ?>
                 <div class="circle-card group" onclick="viewJourney(<?php echo $journey['id']; ?>)" role="button" tabindex="0" aria-label="View <?php echo escapeContent($journey['title']); ?> journey">
                     <div class="circle-ring <?php echo $pulseClass; ?>">
                         <div class="circle-content">
-                            <span class="text-lg lg:text-2xl font-semibold text-gray-700"><?php echo strtoupper($initials); ?></span>
+                            <!-- Mobile: Show Initials -->
+                            <span class="text-xl font-bold text-gray-700 lg:hidden"><?php echo strtoupper($initials); ?></span>
+                            
+                            <!-- Desktop: Rich Journey Card -->
+                            <div class="journey-card-header">
+                                <div class="flex items-start justify-between w-full">
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-gray-900 text-lg leading-tight mb-1 line-clamp-2">
+                                            <?php echo escapeContent($journey['title']); ?>
+                                        </h3>
+                                        <?php if ($journey['client_name']): ?>
+                                        <p class="text-sm text-gray-600 font-medium"><?php echo escapeContent($journey['client_name']); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="flex items-center gap-2 ml-3">
+                                        <?php if ($journey['pulse_status'] == 'critical'): ?>
+                                        <div class="w-3 h-3 bg-red-500 rounded-full pulse-indicator"></div>
+                                        <?php elseif ($journey['pulse_status'] == 'warning'): ?>
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                        <?php else: ?>
+                                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="journey-card-body">
+                                <?php if ($daysLeft): ?>
+                                <div class="text-sm text-gray-500 mb-2">
+                                    <span class="<?php echo strpos($daysLeft, 'Overdue') !== false ? 'text-red-600 font-semibold' : ''; ?>">
+                                        📅 <?php echo $daysLeft; ?>
+                                    </span>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="journey-card-footer">
+                                <div class="flex items-center justify-between w-full">
+                                    <?php if ($journey['balance_due'] > 0): ?>
+                                    <span class="font-bold text-gray-900"><?php echo format_currency($journey['balance_due']); ?></span>
+                                    <?php else: ?>
+                                    <span class="text-green-600 font-semibold text-sm">✓ Paid</span>
+                                    <?php endif; ?>
+                                    
+                                    <div class="text-xs text-gray-400 uppercase tracking-wider font-medium">
+                                        <?php echo strtoupper($journey['status'] ?? 'Active'); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Mobile pulse indicator -->
                             <?php if ($journey['pulse_status'] == 'critical'): ?>
-                            <div class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-indicator"></div>
+                            <div class="lg:hidden absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-indicator"></div>
                             <?php endif; ?>
                         </div>
-                    </div>
-                    <!-- Desktop Journey Title -->
-                    <div class="hidden lg:block mt-3 text-center">
-                        <h3 class="text-sm font-semibold text-gray-800 truncate"><?php echo escapeContent($journey['title']); ?></h3>
-                        <?php if ($journey['client_name']): ?>
-                        <p class="text-xs text-gray-500 truncate"><?php echo escapeContent($journey['client_name']); ?></p>
-                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endforeach; ?>
                 
-                <!-- Add New Journey Circle -->
-                <div class="circle-card group" onclick="createJourney()" role="button" tabindex="0" aria-label="Create new journey">
-                    <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.03) 0%, rgba(255, 138, 101, 0.03) 100%);">
+                <!-- Beautiful Add New Journey Card -->
+                <div class="circle-card group lg:hidden" onclick="createJourney()" role="button" tabindex="0" aria-label="Create new journey">
+                    <div style="position: absolute; inset: 0; border-radius: 50%; border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(255, 138, 101, 0.05) 100%);">
                         <div class="circle-content" style="background: transparent; border: none;">
-                            <svg class="w-8 h-8 lg:w-10 lg:h-10 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                             </svg>
                         </div>
                     </div>
-                    <!-- Desktop Add Title -->
-                    <div class="hidden lg:block mt-3 text-center">
-                        <h3 class="text-sm font-semibold text-gray-600">Add Journey</h3>
+                </div>
+                
+                <!-- Desktop Add New Journey Card -->
+                <div class="hidden lg:block circle-card group" onclick="createJourney()" role="button" tabindex="0" aria-label="Create new journey">
+                    <div class="circle-ring" style="border: 3px dashed rgba(255, 107, 53, 0.3); background: linear-gradient(135deg, rgba(255, 107, 53, 0.02) 0%, rgba(255, 138, 101, 0.02) 100%);">
+                        <div class="circle-content" style="background: transparent;">
+                            <div class="flex flex-col items-center justify-center h-full text-center">
+                                <svg class="w-12 h-12 text-orange-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                <h3 class="font-semibold text-gray-700 text-base">Add New Journey</h3>
+                                <p class="text-sm text-gray-500 mt-1">Start tracking a new project</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -847,45 +1242,60 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     </section>
     <?php endif; ?>
     
-    <!-- Stack - Responsive Moment Feed -->
-    <main class="px-4 lg:px-8 py-4 pb-24 lg:pb-8 max-w-7xl mx-auto">
-        <div class="mb-4 lg:mb-6 flex items-center justify-between">
-            <h2 class="text-sm lg:text-lg font-bold text-gray-800 uppercase tracking-wider">Stack</h2>
-            <?php if (!empty($stackMoments)): ?>
-            <span class="text-xs lg:text-sm text-gray-500">Latest moments</span>
-            <?php endif; ?>
+    <!-- Stack - Multi-Column Desktop Masonry Layout -->
+    <main class="px-6 lg:px-12 py-8 pb-32 lg:pb-12 max-w-7xl mx-auto">
+        <div class="mb-6 lg:mb-10 flex items-center justify-between">
+            <h2 class="text-lg lg:text-2xl font-bold text-gray-900 tracking-tight">Recent Activity</h2>
+            <div class="flex items-center gap-4">
+                <?php if (!empty($stackMoments)): ?>
+                <span class="text-sm lg:text-base text-gray-600 font-medium"><?php echo count($stackMoments); ?> moments</span>
+                <?php endif; ?>
+                <button onclick="openQuickAdd()" class="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-medium text-sm transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Log Moment
+                </button>
+            </div>
         </div>
         
         <div id="stack-feed" class="stack-feed-container">
             <?php if (!empty($stackMoments)): ?>
                 <?php foreach ($stackMoments as $moment): ?>
                 <div class="stack-card swipeable" data-moment-id="<?php echo $moment['id']; ?>" role="article" aria-label="Moment from <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>">
-                    <!-- Journey Badge -->
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs font-bold uppercase tracking-wide rounded-full">
-                            <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
-                        </span>
-                        <span class="text-xs text-gray-400">
+                    <!-- Rich Journey Badge -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-sm font-semibold rounded-full shadow-sm">
+                                <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
+                            </span>
+                            <!-- Visual Type Indicator -->
+                            <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
+                            <div class="flex items-center gap-1">
+                                <?php if ($moment['type'] == 'milestone'): ?>
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs font-medium text-green-700 uppercase tracking-wide">Milestone</span>
+                                <?php elseif ($moment['type'] == 'blocker'): ?>
+                                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <span class="text-xs font-medium text-red-700 uppercase tracking-wide">Blocker</span>
+                                <?php elseif ($moment['type'] == 'note'): ?>
+                                <div class="w-2 h-2 bg-gray-500 rounded-full"></div>
+                                <span class="text-xs font-medium text-gray-700 uppercase tracking-wide">Note</span>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <span class="text-sm text-gray-500 font-medium">
                             <?php echo time_ago($moment['created_at']); ?>
                         </span>
                     </div>
                     
-                    <!-- Moment Content -->
-                    <p class="text-gray-800 leading-relaxed text-base font-medium">
-                        <?php echo escapeContent($moment['content']); ?>
-                    </p>
-                    
-                    <!-- Moment Type Badge -->
-                    <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
-                    <div class="mt-3">
-                        <span class="inline-flex px-3 py-1.5 text-xs font-bold rounded-full shadow-sm
-                            <?php echo $moment['type'] == 'milestone' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' : ''; ?>
-                            <?php echo $moment['type'] == 'blocker' ? 'bg-gradient-to-r from-red-400 to-red-600 text-white' : ''; ?>
-                            <?php echo $moment['type'] == 'note' ? 'bg-gradient-to-r from-gray-400 to-gray-600 text-white' : ''; ?>">
-                            <?php echo ucfirst($moment['type']); ?>
-                        </span>
+                    <!-- Rich Moment Content -->
+                    <div class="prose prose-gray max-w-none">
+                        <p class="text-gray-800 leading-relaxed text-base lg:text-lg font-medium mb-0">
+                            <?php echo escapeContent($moment['content']); ?>
+                        </p>
                     </div>
-                    <?php endif; ?>
                     
                     <!-- Fieldnote Indicator -->
                     <?php if (!empty($moment['has_fieldnote'])): ?>
@@ -896,17 +1306,28 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <!-- Empty State -->
-                <div class="text-center py-12 lg:py-20 col-span-full">
-                    <svg class="w-16 h-16 lg:w-24 lg:h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    <h3 class="text-lg lg:text-2xl font-medium text-gray-900 mb-2">Start Your Journey</h3>
-                    <p class="text-gray-500 mb-4 lg:text-lg">Log your first moment to begin</p>
-                    <button onclick="openQuickAdd()" class="px-6 py-3 bg-orange-500 text-white rounded-full font-medium lg:text-lg hover:bg-orange-600 transition-colors" aria-label="Add your first moment">
-                        Add Moment
-                    </button>
+                <!-- Beautiful Empty State -->
+                <div class="text-center py-20 lg:py-32 col-span-full">
+                    <div class="mb-8">
+                        <div class="w-32 h-32 lg:w-40 lg:h-40 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
+                            <svg class="w-16 h-16 lg:w-20 lg:h-20 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">Your Journey Starts Here</h3>
+                        <p class="text-gray-600 mb-8 lg:text-xl max-w-md mx-auto leading-relaxed">
+                            Log your first moment to begin tracking your creative progress
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="createJourney()" class="px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full font-semibold lg:text-lg hover:from-orange-600 hover:to-pink-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1" aria-label="Create your first journey">
+                                Create Journey
+                            </button>
+                            <button onclick="openQuickAdd()" class="px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-full font-semibold lg:text-lg hover:border-gray-300 hover:bg-gray-50 transition-all duration-200" aria-label="Log your first moment">
+                                Log Moment
+                            </button>
+                        </div>
+                    </div>
                 </div>
             <?php endif; ?>
         </div>
@@ -915,13 +1336,16 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     <!-- Camp Drawer Overlay -->
     <div id="camp-overlay" class="camp-overlay" onclick="closeCampDrawer()"></div>
     
-    <!-- Camp Drawer -->
+    <!-- Professional Camp Drawer -->
     <div id="camp-drawer" class="camp-drawer">
-        <!-- Drawer Header -->
-        <div class="p-4 border-b border-gray-100 bg-gray-50">
+        <!-- Enhanced Drawer Header -->
+        <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-gray-900">Camp</h2>
-                <button onclick="closeCampDrawer()" class="p-2 hover:bg-gray-100 rounded-lg" aria-label="Close Camp Drawer">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Camp</h2>
+                    <p class="text-sm text-gray-600 mt-1">All your active journeys</p>
+                </div>
+                <button onclick="closeCampDrawer()" class="p-2 hover:bg-white rounded-full transition-all duration-200 shadow-sm" aria-label="Close Camp Drawer">
                     <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -929,34 +1353,46 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             </div>
         </div>
         
-        <!-- Journey List -->
+        <!-- Enhanced Journey List -->
         <div class="flex-1 overflow-y-auto">
-            <div class="p-4 space-y-3">
+            <div class="p-6 space-y-4">
                 <?php foreach ($activeJourneys as $journey): ?>
-                <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" 
+                <?php 
+                    // Calculate progress and status
+                    $statusColor = 'green';
+                    $statusText = 'On Track';
+                    if ($journey['pulse_status'] == 'warning') {
+                        $statusColor = 'yellow';
+                        $statusText = 'Attention';
+                    } elseif ($journey['pulse_status'] == 'critical') {
+                        $statusColor = 'red';
+                        $statusText = 'Critical';
+                    }
+                ?>
+                <div class="group p-5 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-200 hover:shadow-lg transition-all duration-300" 
                      onclick="viewJourney(<?php echo $journey['id']; ?>)" 
                      role="button" tabindex="0" 
                      aria-label="View <?php echo escapeContent($journey['title']); ?> journey">
-                    <div class="flex items-start justify-between mb-2">
-                        <h3 class="font-medium text-gray-900"><?php echo escapeContent($journey['title']); ?></h3>
-                        <?php 
-                        switch ($journey['pulse_status']) {
-                            case 'critical':
-                                echo '<span class="w-2 h-2 bg-red-500 rounded-full pulse-indicator"></span>';
-                                break;
-                            case 'warning':
-                                echo '<span class="w-2 h-2 bg-yellow-500 rounded-full"></span>';
-                                break;
-                            default:
-                                echo '<span class="w-2 h-2 bg-green-500 rounded-full"></span>';
-                                break;
-                        }
-                        ?>
+                    <!-- Journey Header -->
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900 text-base group-hover:text-orange-600 transition-colors duration-200"><?php echo escapeContent($journey['title']); ?></h3>
+                            <?php if ($journey['client_name']): ?>
+                            <p class="text-sm text-gray-600 mt-1"><?php echo escapeContent($journey['client_name']); ?></p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex items-center gap-2 ml-3">
+                            <div class="w-3 h-3 bg-<?php echo $statusColor; ?>-500 rounded-full <?php echo $journey['pulse_status'] == 'critical' ? 'pulse-indicator' : ''; ?>"></div>
+                        </div>
                     </div>
+                    
+                    <!-- Journey Metadata -->
                     <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500"><?php echo escapeContent($journey['client_name'] ?? 'Personal'); ?></span>
+                        <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full font-medium"><?php echo $statusText; ?></span>
                         <?php if ($journey['balance_due'] > 0): ?>
-                        <span class="font-medium text-gray-700"><?php echo format_currency($journey['balance_due']); ?></span>
+                        <span class="font-semibold text-gray-900"><?php echo format_currency($journey['balance_due']); ?></span>
+                        <?php else: ?>
+                        <span class="text-green-600 font-semibold">✓ Paid</span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -964,28 +1400,38 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             </div>
         </div>
         
-        <!-- Camp CTA Button -->
-        <div class="p-4 border-t border-gray-100 bg-white">
-            <button onclick="viewFullCamp()" class="w-full py-3 bg-gray-900 text-white rounded-lg font-medium" aria-label="View full camp with all journeys">
-                View Full Camp →
+        <!-- Enhanced Camp CTA -->
+        <div class="p-6 border-t border-gray-200 bg-gray-50">
+            <button onclick="viewFullCamp()" class="w-full py-4 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white rounded-2xl font-semibold text-base transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" aria-label="View full camp with all journeys">
+                <div class="flex items-center justify-center gap-2">
+                    <span>View All Journeys</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
             </button>
         </div>
     </div>
     
-    <!-- Mobile Navigation -->
-    <nav class="mobile-nav">
-        <div class="flex items-center justify-around">
-            <button class="p-3 text-orange-500" aria-label="Home" aria-current="page">
+    <!-- Enhanced Mobile Navigation -->
+    <nav class="mobile-nav lg:hidden">
+        <div class="flex items-center justify-around px-2">
+            <button class="p-3 text-orange-500 bg-orange-50 rounded-full" aria-label="Dashboard" aria-current="page">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
             </button>
-            <button class="p-3 text-gray-400" onclick="viewJourneys()" aria-label="View all journeys">
+            <button class="p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200" onclick="viewJourneys()" aria-label="View all journeys">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.618v10.764a1 1 0 01-.553.894L15 18l-6-3z"/>
                 </svg>
             </button>
-            <button class="p-3 text-gray-400" onclick="viewProfile()" aria-label="View profile">
+            <button class="p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200" onclick="viewFullCamp()" aria-label="View camp">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+            </button>
+            <button class="p-3 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all duration-200" onclick="viewProfile()" aria-label="View profile">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
@@ -1036,6 +1482,22 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
     </div>
     
     <script>
+    // Professional Desktop App Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize loading state
+        document.body.style.opacity = '0';
+        
+        // Progressive enhancement for desktop
+        if (window.innerWidth >= 1024) {
+            document.documentElement.classList.add('desktop-mode');
+        }
+        
+        // Show app after brief loading
+        setTimeout(() => {
+            document.body.classList.add('loaded');
+        }, 100);
+    });
+    
     // Enhanced Camp Drawer Functions
     function openCampDrawer() {
         const drawer = document.getElementById('camp-drawer');
@@ -1450,15 +1912,34 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
         });
     }
     
-    // Keyboard shortcuts
+    // Professional Keyboard shortcuts
     function initKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            // Cmd/Ctrl + K to open quick add
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            // Cmd/Ctrl + K to open quick add (Quick Action)
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 if (!document.getElementById('quick-add-sheet').classList.contains('open')) {
                     openQuickAdd();
+                    showToast('Quick add opened (⌘K)', 'info');
                 }
+            }
+            
+            // Cmd/Ctrl + J for Journeys
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+                e.preventDefault();
+                viewJourneys();
+            }
+            
+            // Cmd/Ctrl + C for Camp
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                viewFullCamp();
+            }
+            
+            // Cmd/Ctrl + N for New Journey
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+                e.preventDefault();
+                createJourney();
             }
             
             // Escape to close modals
@@ -1470,7 +1951,7 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 }
             }
             
-            // Enter to save (when in textarea)
+            // Cmd/Ctrl + Enter to save (when in textarea)
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                 const activeElement = document.activeElement;
                 if (activeElement && activeElement.id === 'moment-content') {
@@ -1479,6 +1960,14 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
                 }
             }
         });
+        
+        // Show keyboard shortcuts hint on first load
+        if (!localStorage.getItem('keyboard-shortcuts-shown')) {
+            setTimeout(() => {
+                showToast('Press ⌘K for quick actions, ⌘J for journeys', 'info');
+                localStorage.setItem('keyboard-shortcuts-shown', 'true');
+            }, 2000);
+        }
     }
     
     // Performance monitoring
@@ -1561,7 +2050,24 @@ $stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
             });
         });
         
-        console.log('FlowJM frontend initialized successfully - Enhanced UX ready!');
+        // Show app ready indicator with stats
+        const journeyCount = <?php echo count($circleJourneys); ?>;
+        const momentCount = <?php echo count($stackMoments); ?>;
+        
+        console.log(`🚀 FlowJM Desktop Ready! ${journeyCount} journeys, ${momentCount} moments loaded.`);
+        
+        // Add loading completion indicator
+        document.body.classList.add('loaded');
+        
+        // Professional loading completion
+        if (journeyCount > 0 || momentCount > 0) {
+            setTimeout(() => {
+                const statusMessage = journeyCount > 0 
+                    ? `Welcome back! ${journeyCount} active journeys loaded.`
+                    : 'Ready to start your first journey!';
+                showToast(statusMessage, 'success');
+            }, 500);
+        }
     });
     </script>
     </div> <!-- End app-container -->
