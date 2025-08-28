@@ -637,12 +637,11 @@
               <!-- View Camp Button at bottom of Stacks -->
               <div style="margin-top: 24px; display: flex; justify-content: center;">
                   <button class="btn-secondary" onclick="viewFullCamp()" style="padding: 12px 32px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
-                  <svg xmlns="http://www.w3.org/2000/svg" 
-     width="64" height="64" viewBox="0 0 64 64" 
-     fill="none" stroke="white" stroke-width="4" 
-     stroke-linecap="round" stroke-linejoin="round">
-  <path d="M8 56 L24 24 L32 36 L40 20 L56 56 Z"/>
-</svg>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3 17L10 3L17 17H3z"/>
+                          <path d="M10 3L10 17"/>
+                          <path d="M7 17V11L10 8L13 11V17"/>
+                      </svg>
                       Visit Camp
                   </button>
               </div>
