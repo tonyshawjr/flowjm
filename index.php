@@ -1,7 +1,7 @@
 <?php
 /**
  * FlowJM - The Lookout
- * A narrative-driven journey management system for creative freelancers
+ * Main dashboard experience - like a social app but for creative work
  */
 
 // Define application root
@@ -39,22 +39,22 @@ $moment = new Moment();
 
 $journeyStats = $journey->getStats($_SESSION['user_id']);
 $momentStats = $moment->getStats($_SESSION['user_id']);
-$circleJourneys = $journey->getCircleJourneys($_SESSION['user_id']);
-$activeJourneys = $journey->getByUserId($_SESSION['user_id'], 'active', 1, 20);
-$recentMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 10);
 
-// Get today's focus (journeys with due dates in next 3 days or critical status)
-$todaysFocus = array_filter($circleJourneys, function($j) {
-    $dueIn = $j['due_date'] ? (strtotime($j['due_date']) - time()) / 86400 : 999;
-    return $dueIn <= 3 || $j['pulse_status'] == 'critical';
-});
+// Get Circle Journeys (sorted by relevance: deadlines, overdue, recent activity)
+$circleJourneys = $journey->getCircleJourneys($_SESSION['user_id']);
+
+// Get all active journeys for Camp drawer
+$activeJourneys = $journey->getByUserId($_SESSION['user_id'], 'active', 1, 50);
+
+// Get Stack - recent moments across all journeys
+$stackMoments = $moment->getRecentByUserId($_SESSION['user_id'], 1, 30);
 
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="<?php echo Auth::generateCsrfToken(); ?>">
     <title>The Lookout - FlowJM</title>
     
@@ -64,801 +64,612 @@ $todaysFocus = array_filter($circleJourneys, function($j) {
     <!-- Custom Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Creative Journey Design System */
+        /* Mobile-First Creative Journal Design */
         :root {
-            /* Journey Colors - Warm and Natural */
-            --trail-dust: #F5F2ED;      /* Main background */
-            --morning-light: #FFFFFF;    /* Cards */
-            --campfire: #FF6B35;         /* Primary action */
-            --forest-green: #00AA88;     /* Success */
-            --sunset-gold: #FFB800;      /* Warning */
-            --mountain-shadow: #2D3748;  /* Dark text */
-            --trail-marker: #718096;     /* Secondary text */
-            --mist: #E2E8F0;            /* Borders */
-            
-            /* Creative Shadows */
-            --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
-            --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08);
-            --shadow-fab: 0 12px 32px rgba(255, 107, 53, 0.25);
+            --flow-bg: #FAFAF8;
+            --flow-card: #FFFFFF;
+            --flow-primary: #FF6B35;
+            --flow-text: #2D3436;
+            --flow-secondary: #636E72;
+            --flow-border: #E1E4E8;
+            --flow-success: #00B894;
+            --flow-warning: #FDCB6E;
+            --flow-critical: #FF6B6B;
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
         }
         
         * {
             font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        h1, h2, h3 {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        
-        /* Background Pattern */
         body {
-            background-color: var(--trail-dust);
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.02) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 170, 136, 0.02) 0%, transparent 50%);
+            background: var(--flow-bg);
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            overflow-x: hidden;
         }
         
-        /* Journey Card Styles */
-        .journey-card {
-            background: linear-gradient(135deg, var(--morning-light) 0%, rgba(255, 255, 255, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Circle - Horizontal Scrollable Stories */
+        .circle-container {
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
         
-        .journey-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-hover);
-        }
-        
-        /* Moment Feed Style - Like a Creative Timeline */
-        .moment-item {
-            position: relative;
-            padding-left: 2rem;
-        }
-        
-        .moment-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0.75rem;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--campfire);
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-        }
-        
-        .moment-item::after {
-            content: '';
-            position: absolute;
-            left: 3px;
-            top: 1.75rem;
-            width: 2px;
-            height: calc(100% - 1rem);
-            background: linear-gradient(to bottom, var(--mist), transparent);
-        }
-        
-        .moment-item:last-child::after {
+        .circle-container::-webkit-scrollbar {
             display: none;
         }
         
-        /* Pulse Animation */
-        @keyframes pulse {
-            0%, 100% { 
+        .circle-card {
+            scroll-snap-align: center;
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .circle-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--flow-primary) 0%, #FF8A65 100%);
+        }
+        
+        .circle-ring.warning {
+            background: linear-gradient(135deg, var(--flow-warning) 0%, #FFA502 100%);
+        }
+        
+        .circle-ring.critical {
+            background: linear-gradient(135deg, var(--flow-critical) 0%, #FF4757 100%);
+        }
+        
+        .circle-content {
+            background: white;
+            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Stack - Vertical Moment Feed */
+        .stack-card {
+            background: var(--flow-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .stack-card:active {
+            transform: scale(0.98);
+        }
+        
+        /* Swipe Gesture Support */
+        .swipeable {
+            touch-action: pan-y;
+            position: relative;
+        }
+        
+        .swipeable.swiping {
+            transition: transform 0.1s ease-out;
+        }
+        
+        .swipeable.swiped-left {
+            transform: translateX(-100px);
+        }
+        
+        .swipeable.swiped-right {
+            transform: translateX(100px);
+        }
+        
+        /* Camp Drawer */
+        .camp-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 85%;
+            max-width: 380px;
+            background: white;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 60;
+            box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .camp-drawer.open {
+            transform: translateX(0);
+        }
+        
+        .camp-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 59;
+        }
+        
+        .camp-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Pulse Indicator Animation */
+        @keyframes pulse-dot {
+            0%, 100% {
                 transform: scale(1);
                 opacity: 1;
             }
-            50% { 
-                transform: scale(1.2);
+            50% {
+                transform: scale(1.3);
                 opacity: 0.6;
             }
         }
         
-        .pulse-dot {
-            animation: pulse 2s ease-in-out infinite;
+        .pulse-indicator {
+            animation: pulse-dot 2s ease-in-out infinite;
         }
         
-        /* Floating Action Button - Campfire Style */
-        .fab-main {
-            background: linear-gradient(135deg, var(--campfire) 0%, #FF8055 100%);
-            box-shadow: var(--shadow-fab);
+        /* Mobile Navigation Bar */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--flow-border);
+            padding: 8px 0 calc(8px + var(--safe-area-inset-bottom));
+            z-index: 50;
         }
         
-        .fab-main:hover {
-            transform: scale(1.1) rotate(90deg);
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: calc(70px + var(--safe-area-inset-bottom));
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--flow-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            z-index: 49;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        /* Quick Add Form */
-        .quick-add {
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        /* Quick Add Sheet */
+        .quick-add-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 61;
+            padding-bottom: var(--safe-area-inset-bottom);
         }
         
-        .quick-add.active {
+        .quick-add-sheet.open {
             transform: translateY(0);
-        }
-        
-        /* Status Badges */
-        .status-healthy { 
-            background: linear-gradient(135deg, #00AA88 0%, #00CC99 100%);
-            color: white;
-        }
-        
-        .status-warning { 
-            background: linear-gradient(135deg, #FFB800 0%, #FFC933 100%);
-            color: white;
-        }
-        
-        .status-critical { 
-            background: linear-gradient(135deg, #FF4757 0%, #FF6B7A 100%);
-            color: white;
-        }
-        
-        /* Desktop Navigation Tabs */
-        .nav-tab-header {
-            position: relative;
-            padding: 1rem 1.5rem;
-            color: var(--trail-marker);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .nav-tab-header:hover {
-            color: var(--mountain-shadow);
-            background: rgba(255, 107, 53, 0.05);
-        }
-        
-        .nav-tab-header.active {
-            color: var(--campfire);
-            background: rgba(255, 107, 53, 0.1);
-            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
-        }
-        
-        /* Content Sections */
-        .section-content {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .section-content.hidden {
-            display: none;
-        }
-        
-        /* Enhanced Journey Cards */
-        .journey-card {
-            background: linear-gradient(135deg, var(--morning-light) 0%, rgba(255, 255, 255, 0.98) 100%);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .journey-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 107, 53, 0.2);
-        }
-        
-        /* Multi-column Moment Layout */
-        .columns-1 {
-            column-count: 1;
-        }
-        
-        @media (min-width: 1024px) {
-            .columns-2 {
-                column-count: 2;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Professional Desktop Header -->
-    <header class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between px-6 py-4">
-                <!-- Logo and Brand -->
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <svg class="w-10 h-10 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M13 10l5 8H6l5-8m2-7l7 18H4L11 3z"/>
-                        </svg>
-                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full pulse-dot"></div>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">FlowJM</h1>
-                        <p class="text-sm text-gray-500 font-medium">The Lookout • <?php echo date('l, M j, Y'); ?></p>
-                    </div>
-                </div>
-                
-                <!-- Desktop Navigation Tabs -->
-                <nav class="flex items-center space-x-8">
-                    <button class="nav-tab-header active" data-section="circle">
-                        <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span class="font-medium">Circle</span>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"><?php echo $journeyStats['circle_journeys']; ?></span>
-                        </div>
-                    </button>
-                    <button class="nav-tab-header" data-section="stacks">
-                        <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
-                            </svg>
-                            <span class="font-medium">Stacks</span>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"><?php echo count($recentMoments); ?></span>
-                        </div>
-                    </button>
-                    <button class="nav-tab-header" data-section="camp">
-                        <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                            <span class="font-medium">Camp</span>
-                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"><?php echo $journeyStats['active_journeys']; ?></span>
-                        </div>
-                    </button>
-                </nav>
-                
-                <!-- User Menu and Actions -->
-                <div class="flex items-center space-x-4">
-                    <!-- Journey Health Indicator -->
-                    <div class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 rounded-xl border border-green-200">
-                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                        <span class="text-sm font-semibold text-green-700"><?php echo $journeyStats['active_journeys']; ?> Active</span>
-                    </div>
-                    
-                    <!-- Quick Add Button -->
-                    <button onclick="toggleQuickAdd()" class="flex items-center space-x-2 px-4 py-2 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-all duration-200 shadow-md hover:shadow-lg">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        <span class="font-medium">Add Moment</span>
-                    </button>
-                    
-                    <!-- User Avatar -->
-                    <div class="flex items-center space-x-3">
-                        <div class="text-right">
-                            <p class="text-sm font-semibold text-gray-900"><?php echo escapeContent($currentUser['name']); ?></p>
-                            <p class="text-xs text-gray-500">Creative Professional</p>
-                        </div>
-                        <div class="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center shadow-md">
-                            <span class="text-sm font-bold text-white"><?php echo get_initials($currentUser['name']); ?></span>
-                        </div>
-                    </div>
-                </div>
+    <!-- The Lookout Header -->
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <h1 class="text-xl font-bold text-gray-900">The Lookout</h1>
+                <span class="text-xs text-gray-500"><?php echo date('M j'); ?></span>
             </div>
+            
+            <!-- Tent Icon - Opens Camp Drawer -->
+            <button onclick="openCampDrawer()" class="p-2 hover:bg-gray-50 rounded-lg">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M3 21h18L12 3 3 21zm9-13v6m0 2h.01"/>
+                </svg>
+            </button>
         </div>
     </header>
     
-    <!-- Main Desktop Content -->
-    <main class="max-w-7xl mx-auto px-6 py-8">
+    <!-- Circle - Horizontal Scrollable Priority Journeys -->
+    <?php if (!empty($circleJourneys)): ?>
+    <section class="bg-white border-b border-gray-100 py-4">
+        <div class="px-4 mb-3">
+            <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Circle</h2>
+        </div>
         
-        <!-- Circle Section - Rich Journey Cards -->
-        <section id="circle-section" class="section-content">
-            <?php if (!empty($todaysFocus)): ?>
-            <div class="mb-12">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2 bg-orange-100 rounded-xl">
-                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Priority Focus</h2>
-                            <p class="text-gray-600">Journeys requiring immediate attention</p>
-                        </div>
-                    </div>
-                    <span class="px-4 py-2 text-sm font-semibold bg-red-100 text-red-700 rounded-xl">
-                        <?php echo count($todaysFocus); ?> Critical Items
-                    </span>
-                </div>
+        <div class="circle-container flex space-x-4 px-4 overflow-x-auto">
+            <?php foreach ($circleJourneys as $journey): ?>
+            <?php 
+                $pulseClass = '';
+                if ($journey['pulse_status'] == 'warning') $pulseClass = 'warning';
+                if ($journey['pulse_status'] == 'critical') $pulseClass = 'critical';
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <?php foreach (array_slice($todaysFocus, 0, 3) as $journey): ?>
-                    <div class="journey-card bg-white rounded-2xl p-8 border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer" 
-                         onclick="window.location.href='/journey.php?id=<?php echo $journey['id']; ?>'">
-                        
-                        <!-- Journey Header -->
-                        <div class="flex items-start justify-between mb-6">
-                            <div class="flex-1">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2"><?php echo escapeContent($journey['title']); ?></h3>
-                                <p class="text-sm font-medium text-gray-500"><?php echo escapeContent($journey['client_name'] ?? 'Personal Project'); ?></p>
-                            </div>
-                            <?php
-                            $statusClass = 'status-' . $journey['pulse_status'];
-                            $statusColor = $journey['pulse_status'] == 'critical' ? 'bg-red-500' : ($journey['pulse_status'] == 'warning' ? 'bg-yellow-500' : 'bg-green-500');
-                            ?>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-3 h-3 <?php echo $statusColor; ?> rounded-full"></div>
-                                <span class="px-3 py-1.5 text-xs font-bold rounded-xl <?php echo $statusClass; ?>">
-                                    <?php echo strtoupper($journey['pulse_status']); ?>
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Journey Details -->
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-xl">
-                                <div class="flex items-center space-x-2 text-gray-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span class="font-medium"><?php echo $journey['due_date'] ? date('M j, Y', strtotime($journey['due_date'])) : 'Ongoing'; ?></span>
-                                </div>
-                                <?php if ($journey['balance_due'] > 0): ?>
-                                <div class="text-right">
-                                    <p class="text-xl font-bold text-gray-900"><?php echo format_currency($journey['balance_due']); ?></p>
-                                    <p class="text-xs text-gray-500">Outstanding</p>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <!-- Progress Indicator -->
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="font-medium text-gray-700">Progress</span>
-                                    <span class="text-gray-500">75%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-orange-500 h-2 rounded-full" style="width: 75%"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Last Activity -->
-                            <?php if ($journey['last_moment_at']): ?>
-                            <div class="pt-4 border-t border-gray-100">
-                                <p class="text-sm text-gray-600">
-                                    <span class="font-medium">Last update:</span> <?php echo time_ago($journey['last_moment_at']); ?>
-                                </p>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            <?php endif; ?>
-            
-            <!-- All Active Journeys Grid -->
-            <div class="mb-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-gray-900">Active Journeys</h3>
-                    <button class="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        <span>New Journey</span>
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                    <?php foreach (array_slice($circleJourneys, 0, 8) as $journey): ?>
-                    <div class="journey-card bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-all duration-200 cursor-pointer" 
-                         onclick="window.location.href='/journey.php?id=<?php echo $journey['id']; ?>'">
-                        <div class="flex items-start justify-between mb-3">
-                            <h4 class="font-semibold text-gray-900 text-sm leading-tight"><?php echo escapeContent($journey['title']); ?></h4>
-                            <?php
-                            $statusColor = $journey['pulse_status'] == 'critical' ? 'bg-red-500' : ($journey['pulse_status'] == 'warning' ? 'bg-yellow-500' : 'bg-green-500');
-                            ?>
-                            <div class="w-2 h-2 <?php echo $statusColor; ?> rounded-full"></div>
-                        </div>
-                        <p class="text-xs text-gray-500 mb-3"><?php echo escapeContent($journey['client_name'] ?? 'Personal'); ?></p>
-                        <?php if ($journey['balance_due'] > 0): ?>
-                        <p class="text-sm font-bold text-gray-900"><?php echo format_currency($journey['balance_due']); ?></p>
+                // Get initials or first letter
+                $initials = substr($journey['title'], 0, 1);
+                if ($journey['client_name']) {
+                    $words = explode(' ', $journey['client_name']);
+                    if (count($words) > 1) {
+                        $initials = substr($words[0], 0, 1) . substr($words[1], 0, 1);
+                    }
+                }
+            ?>
+            <div class="circle-card" onclick="viewJourney(<?php echo $journey['id']; ?>)">
+                <div class="circle-ring <?php echo $pulseClass; ?>">
+                    <div class="circle-content">
+                        <span class="text-lg font-semibold text-gray-700"><?php echo strtoupper($initials); ?></span>
+                        <?php if ($journey['pulse_status'] == 'critical'): ?>
+                        <div class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full pulse-indicator"></div>
                         <?php endif; ?>
                     </div>
-                    <?php endforeach; ?>
                 </div>
             </div>
-        </section>
-        
-        <!-- Stacks Section - Multi-Column Moment Feed -->
-        <section id="stacks-section" class="section-content hidden">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-blue-100 rounded-xl">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">The Stacks</h2>
-                        <p class="text-gray-600">Your creative journey timeline</p>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
             
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Moment Feed - Multi-Column -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
-                        <div class="p-6 border-b border-gray-100">
-                            <h3 class="font-bold text-gray-900">Recent Activity</h3>
-                        </div>
-                        
-                        <div class="p-6">
-                            <?php if (!empty($recentMoments)): ?>
-                            <div class="columns-1 lg:columns-2 gap-6 space-y-4">
-                                <?php foreach ($recentMoments as $moment): ?>
-                                <div class="moment-item break-inside-avoid mb-6">
-                                    <div class="bg-gray-50 rounded-xl p-5">
-                                        <!-- Moment Content -->
-                                        <p class="text-gray-800 leading-relaxed mb-4">
-                                            <?php echo escapeContent($moment['content']); ?>
-                                        </p>
-                                        
-                                        <!-- Moment Meta -->
-                                        <div class="flex items-center justify-between text-sm">
-                                            <div class="flex items-center space-x-3">
-                                                <span class="font-semibold text-orange-600">
-                                                    <?php echo escapeContent($moment['journey_title']); ?>
-                                                </span>
-                                                <?php if (!empty($moment['type']) && $moment['type'] == 'milestone'): ?>
-                                                <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
-                                                    Milestone
-                                                </span>
-                                                <?php endif; ?>
-                                            </div>
-                                            <span class="text-gray-400">
-                                                <?php echo time_ago($moment['created_at']); ?>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                            <?php else: ?>
-                            <div class="text-center py-16">
-                                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-700 mb-2">No moments yet</h3>
-                                <p class="text-gray-500 mb-6">Start logging moments to build your journey story</p>
-                                <button onclick="toggleQuickAdd()" class="px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-semibold">
-                                    Log Your First Moment
-                                </button>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Stats Sidebar -->
-                <div class="space-y-6">
-                    <!-- Journey Pulse -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 mb-6">Journey Pulse</h3>
-                        
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 bg-green-500 rounded-full"></div>
-                                    <span class="text-sm font-medium text-gray-700">Healthy</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <?php 
-                                        $healthyCount = isset($journeyStats['healthy_journeys']) ? $journeyStats['healthy_journeys'] : 0;
-                                        $activeCount = isset($journeyStats['active_journeys']) && $journeyStats['active_journeys'] > 0 ? $journeyStats['active_journeys'] : 1;
-                                        $healthyPercent = ($healthyCount / $activeCount) * 100;
-                                        ?>
-                                        <div class="h-full bg-green-500" style="width: <?php echo $healthyPercent; ?>%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-gray-900"><?php echo $healthyCount; ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                                    <span class="text-sm font-medium text-gray-700">Warning</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <?php 
-                                        $warningCount = isset($journeyStats['warning_journeys']) ? $journeyStats['warning_journeys'] : 0;
-                                        $warningPercent = ($warningCount / $activeCount) * 100;
-                                        ?>
-                                        <div class="h-full bg-yellow-500" style="width: <?php echo $warningPercent; ?>%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-gray-900"><?php echo $warningCount; ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 bg-red-500 rounded-full"></div>
-                                    <span class="text-sm font-medium text-gray-700">Critical</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <?php 
-                                        $criticalCount = isset($journeyStats['critical_journeys']) ? $journeyStats['critical_journeys'] : 0;
-                                        $criticalPercent = ($criticalCount / $activeCount) * 100;
-                                        ?>
-                                        <div class="h-full bg-red-500" style="width: <?php echo $criticalPercent; ?>%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-gray-900"><?php echo $criticalCount; ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Financial Flow -->
-                    <div class="bg-gradient-to-br from-orange-50 to-pink-50 rounded-2xl p-6 border border-orange-100">
-                        <h3 class="font-bold text-gray-900 mb-4">Financial Flow</h3>
-                        
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-gray-600">Outstanding</span>
-                                <span class="text-2xl font-bold text-gray-900">
-                                    <?php echo format_currency($journeyStats['total_balance'] ?? 0); ?>
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-gray-600">This Month</span>
-                                <span class="text-lg font-semibold text-gray-700">
-                                    <?php echo format_currency($journeyStats['month_total'] ?? 0); ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Activity Stats -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="font-bold text-gray-900 mb-4">Activity</h3>
-                        
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="text-center p-4 bg-gray-50 rounded-xl">
-                                <p class="text-3xl font-bold text-gray-900"><?php echo $momentStats['total_moments']; ?></p>
-                                <p class="text-sm font-medium text-gray-500">Total Moments</p>
-                            </div>
-                            <div class="text-center p-4 bg-gray-50 rounded-xl">
-                                <p class="text-3xl font-bold text-gray-900"><?php echo $momentStats['week_moments'] ?? 0; ?></p>
-                                <p class="text-sm font-medium text-gray-500">This Week</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Add New Journey Circle -->
+            <div class="circle-card" onclick="createJourney()">
+                <div class="circle-content border-2 border-dashed border-gray-300">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
                 </div>
             </div>
-        </section>
-        
-        <!-- Camp Section - Journey Management -->
-        <section id="camp-section" class="section-content hidden">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-green-100 rounded-xl">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Base Camp</h2>
-                        <p class="text-gray-600">Journey management and analytics</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
-                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-                <h3 class="text-xl font-semibold text-gray-700 mb-2">Camp is Being Set Up</h3>
-                <p class="text-gray-500">Advanced journey management tools coming soon</p>
-            </div>
-        </section>
-    </main>
+        </div>
+    </section>
+    <?php endif; ?>
     
-    <!-- Enhanced Quick Add Modal -->
-    <div id="quick-add-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
-        <div class="flex items-center justify-center min-h-screen p-6">
-            <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Log a Journey Moment</h3>
-                    <button onclick="toggleQuickAdd()" class="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
+    <!-- Stack - Vertical Moment Feed -->
+    <main class="px-4 py-4 pb-24">
+        <div class="mb-4">
+            <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wider">Stack</h2>
+        </div>
+        
+        <div id="stack-feed">
+            <?php if (!empty($stackMoments)): ?>
+                <?php foreach ($stackMoments as $moment): ?>
+                <div class="stack-card swipeable" data-moment-id="<?php echo $moment['id']; ?>">
+                    <!-- Journey Badge -->
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold text-orange-600 uppercase tracking-wide">
+                            <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
+                        </span>
+                        <span class="text-xs text-gray-400">
+                            <?php echo time_ago($moment['created_at']); ?>
+                        </span>
+                    </div>
+                    
+                    <!-- Moment Content -->
+                    <p class="text-gray-800 leading-relaxed">
+                        <?php echo escapeContent($moment['content']); ?>
+                    </p>
+                    
+                    <!-- Moment Type Badge -->
+                    <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
+                    <div class="mt-3">
+                        <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
+                            <?php echo $moment['type'] == 'milestone' ? 'bg-green-100 text-green-700' : ''; ?>
+                            <?php echo $moment['type'] == 'blocker' ? 'bg-red-100 text-red-700' : ''; ?>
+                            <?php echo $moment['type'] == 'note' ? 'bg-gray-100 text-gray-700' : ''; ?>">
+                            <?php echo ucfirst($moment['type']); ?>
+                        </span>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <!-- Fieldnote Indicator -->
+                    <?php if (!empty($moment['has_fieldnote'])): ?>
+                    <div class="mt-2 text-xs text-gray-500 italic">
+                        📝 Has fieldnote
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Start Your Journey</h3>
+                    <p class="text-gray-500 mb-4">Log your first moment to begin</p>
+                    <button onclick="openQuickAdd()" class="px-6 py-2 bg-orange-500 text-white rounded-full font-medium">
+                        Add Moment
                     </button>
                 </div>
-                
-                <form class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-3">Journey</label>
-                        <select class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
-                            <option>Select a journey...</option>
-                            <?php foreach ($activeJourneys as $j): ?>
-                            <option value="<?php echo $j['id']; ?>"><?php echo escapeContent($j['title']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
+            <?php endif; ?>
+        </div>
+    </main>
+    
+    <!-- Camp Drawer Overlay -->
+    <div id="camp-overlay" class="camp-overlay" onclick="closeCampDrawer()"></div>
+    
+    <!-- Camp Drawer -->
+    <div id="camp-drawer" class="camp-drawer">
+        <!-- Drawer Header -->
+        <div class="p-4 border-b border-gray-100 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">Camp</h2>
+                <button onclick="closeCampDrawer()" class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Journey List -->
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-4 space-y-3">
+                <?php foreach ($activeJourneys as $journey): ?>
+                <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" 
+                     onclick="viewJourney(<?php echo $journey['id']; ?>)">
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="font-medium text-gray-900"><?php echo escapeContent($journey['title']); ?></h3>
+                        <?php if ($journey['pulse_status'] == 'critical'): ?>
+                        <span class="w-2 h-2 bg-red-500 rounded-full pulse-indicator"></span>
+                        <?php elseif ($journey['pulse_status'] == 'warning'): ?>
+                        <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                        <?php else: ?>
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <?php endif; ?>
                     </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-3">What happened?</label>
-                        <textarea 
-                            class="w-full px-4 py-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            rows="4"
-                            placeholder="Describe your progress, challenges, or achievements..."
-                        ></textarea>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-500"><?php echo escapeContent($journey['client_name'] ?? 'Personal'); ?></span>
+                        <?php if ($journey['balance_due'] > 0): ?>
+                        <span class="font-medium text-gray-700"><?php echo format_currency($journey['balance_due']); ?></span>
+                        <?php endif; ?>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-3">Type</label>
-                            <select class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500">
-                                <option value="progress">Progress Update</option>
-                                <option value="milestone">Milestone</option>
-                                <option value="challenge">Challenge</option>
-                                <option value="insight">Insight</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-3">Mood</label>
-                            <div class="flex space-x-2">
-                                <button type="button" class="flex-1 p-3 border border-gray-200 rounded-xl hover:bg-green-50 hover:border-green-200 transition-colors">
-                                    <span class="text-2xl">😊</span>
-                                </button>
-                                <button type="button" class="flex-1 p-3 border border-gray-200 rounded-xl hover:bg-yellow-50 hover:border-yellow-200 transition-colors">
-                                    <span class="text-2xl">😐</span>
-                                </button>
-                                <button type="button" class="flex-1 p-3 border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors">
-                                    <span class="text-2xl">😤</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-100">
-                        <button type="button" onclick="toggleQuickAdd()" class="px-6 py-3 text-gray-600 hover:text-gray-900 font-semibold transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-8 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors font-semibold shadow-md hover:shadow-lg">
-                            Save Moment
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        
+        <!-- Camp CTA Button -->
+        <div class="p-4 border-t border-gray-100 bg-white">
+            <button onclick="viewFullCamp()" class="w-full py-3 bg-gray-900 text-white rounded-lg font-medium">
+                View Full Camp →
+            </button>
+        </div>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <div class="flex items-center justify-around">
+            <button class="p-3 text-orange-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+            </button>
+            <button class="p-3 text-gray-400" onclick="viewJourneys()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.618v10.764a1 1 0 01-.553.894L15 18l-6-3z"/>
+                </svg>
+            </button>
+            <button class="p-3 text-gray-400" onclick="viewProfile()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="openQuickAdd()">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+    </button>
+    
+    <!-- Quick Add Sheet -->
+    <div id="quick-add-sheet" class="quick-add-sheet">
+        <div class="p-4">
+            <!-- Drag Handle -->
+            <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+            
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Log a Moment</h3>
+            
+            <textarea 
+                id="moment-content"
+                class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                rows="4"
+                placeholder="What progress did you make?"
+                autofocus
+            ></textarea>
+            
+            <select id="journey-select" class="w-full mt-3 p-3 border border-gray-200 rounded-lg">
+                <option value="">Select Journey</option>
+                <?php foreach ($activeJourneys as $j): ?>
+                <option value="<?php echo $j['id']; ?>"><?php echo escapeContent($j['title']); ?></option>
+                <?php endforeach; ?>
+            </select>
+            
+            <div class="flex space-x-2 mt-4">
+                <button onclick="closeQuickAdd()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium">
+                    Cancel
+                </button>
+                <button onclick="saveMoment()" class="flex-1 py-3 bg-orange-500 text-white rounded-lg font-medium">
+                    Save Moment
+                </button>
             </div>
         </div>
     </div>
     
     <script>
-    // Toggle Enhanced Quick Add Modal
-    function toggleQuickAdd() {
-        const modal = document.getElementById('quick-add-modal');
-        modal.classList.toggle('hidden');
-        
-        if (!modal.classList.contains('hidden')) {
-            // Focus first input when opening
-            setTimeout(() => {
-                modal.querySelector('select').focus();
-            }, 100);
-        }
+    // Camp Drawer Functions
+    function openCampDrawer() {
+        document.getElementById('camp-drawer').classList.add('open');
+        document.getElementById('camp-overlay').classList.add('active');
     }
     
-    // Desktop Navigation System
-    document.addEventListener('DOMContentLoaded', function() {
-        const navButtons = document.querySelectorAll('.nav-tab-header');
-        const sections = {
-            'circle': document.getElementById('circle-section'),
-            'stacks': document.getElementById('stacks-section'),
-            'camp': document.getElementById('camp-section')
-        };
+    function closeCampDrawer() {
+        document.getElementById('camp-drawer').classList.remove('open');
+        document.getElementById('camp-overlay').classList.remove('active');
+    }
+    
+    // Quick Add Functions
+    function openQuickAdd() {
+        document.getElementById('quick-add-sheet').classList.add('open');
+        document.getElementById('camp-overlay').classList.add('active');
+        // Focus on textarea
+        setTimeout(() => {
+            document.getElementById('moment-content').focus();
+        }, 300);
+    }
+    
+    function closeQuickAdd() {
+        document.getElementById('quick-add-sheet').classList.remove('open');
+        document.getElementById('camp-overlay').classList.remove('active');
+    }
+    
+    // Navigation Functions
+    function viewJourney(id) {
+        window.location.href = `/journey.php?id=${id}`;
+    }
+    
+    function createJourney() {
+        window.location.href = '/journey/create.php';
+    }
+    
+    function viewFullCamp() {
+        window.location.href = '/camp.php';
+    }
+    
+    function viewJourneys() {
+        window.location.href = '/journeys.php';
+    }
+    
+    function viewProfile() {
+        window.location.href = '/profile.php';
+    }
+    
+    // Save Moment
+    function saveMoment() {
+        const content = document.getElementById('moment-content').value;
+        const journeyId = document.getElementById('journey-select').value;
         
-        // Navigation Handler
-        navButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const targetSection = this.getAttribute('data-section');
-                
-                // Update active nav
-                navButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show/hide sections with smooth transition
-                Object.keys(sections).forEach(key => {
-                    const section = sections[key];
-                    if (key === targetSection) {
-                        section.classList.remove('hidden');
-                        setTimeout(() => {
-                            section.style.opacity = '1';
-                            section.style.transform = 'translateY(0)';
-                        }, 10);
-                    } else {
-                        section.style.opacity = '0';
-                        section.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            section.classList.add('hidden');
-                        }, 300);
-                    }
-                });
-                
-                // Update URL without reload
-                history.pushState(null, '', `#${targetSection}`);
-            });
-        });
-        
-        // Handle back/forward browser buttons
-        window.addEventListener('popstate', function() {
-            const hash = window.location.hash.slice(1);
-            const targetButton = document.querySelector(`[data-section="${hash}"]`);
-            if (targetButton) {
-                targetButton.click();
-            }
-        });
-        
-        // Initialize from URL hash
-        const initialHash = window.location.hash.slice(1);
-        if (initialHash && sections[initialHash]) {
-            const targetButton = document.querySelector(`[data-section="${initialHash}"]`);
-            if (targetButton) {
-                targetButton.click();
-            }
+        if (!content || !journeyId) {
+            alert('Please enter content and select a journey');
+            return;
         }
         
-        // Staggered Animation for Journey Cards
-        function animateCards() {
-            document.querySelectorAll('.journey-card').forEach((card, index) => {
+        // TODO: Implement AJAX save
+        console.log('Saving moment:', { content, journeyId });
+        closeQuickAdd();
+    }
+    
+    // Swipe Gesture Support for Stack Cards
+    let startX = null;
+    let currentCard = null;
+    
+    document.querySelectorAll('.swipeable').forEach(card => {
+        card.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            currentCard = card;
+        });
+        
+        card.addEventListener('touchmove', (e) => {
+            if (!startX) return;
+            
+            const x = e.touches[0].clientX;
+            const diff = x - startX;
+            
+            if (Math.abs(diff) > 50) {
+                card.style.transform = `translateX(${diff}px)`;
+                card.style.opacity = 1 - Math.abs(diff) / 200;
+            }
+        });
+        
+        card.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const diff = endX - startX;
+            
+            if (Math.abs(diff) > 100) {
+                // Swiped enough to trigger action
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = `translateX(${diff > 0 ? '100%' : '-100%'})`;
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
                 
                 setTimeout(() => {
-                    card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 150);
-            });
+                    card.style.display = 'none';
+                }, 300);
+            } else {
+                // Snap back
+                card.style.transition = 'all 0.2s ease';
+                card.style.transform = 'translateX(0)';
+                card.style.opacity = '1';
+            }
+            
+            startX = null;
+            currentCard = null;
+        });
+    });
+    
+    // Pull to Refresh
+    let pullStartY = null;
+    let isPulling = false;
+    
+    document.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0) {
+            pullStartY = e.touches[0].clientY;
+        }
+    });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!pullStartY) return;
+        
+        const y = e.touches[0].clientY;
+        const diff = y - pullStartY;
+        
+        if (diff > 0 && diff < 150) {
+            isPulling = true;
+            document.body.style.transform = `translateY(${diff / 2}px)`;
+        }
+    });
+    
+    document.addEventListener('touchend', () => {
+        if (isPulling && pullStartY) {
+            document.body.style.transition = 'transform 0.3s ease';
+            document.body.style.transform = 'translateY(0)';
+            
+            // Trigger refresh
+            if (pullStartY > 100) {
+                location.reload();
+            }
         }
         
-        // Animate cards on load
-        animateCards();
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Escape to close modal
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('quick-add-modal');
-                if (!modal.classList.contains('hidden')) {
-                    toggleQuickAdd();
-                }
-            }
-            
-            // Ctrl/Cmd + N for new moment
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                toggleQuickAdd();
-            }
-            
-            // Number keys for navigation
-            if (e.key >= '1' && e.key <= '3') {
-                const sections = ['circle', 'stacks', 'camp'];
-                const targetSection = sections[parseInt(e.key) - 1];
-                const targetButton = document.querySelector(`[data-section="${targetSection}"]`);
-                if (targetButton) {
-                    targetButton.click();
-                }
-            }
-        });
-        
-        // Mood button interactions
-        document.querySelectorAll('button[type="button"]').forEach(button => {
-            if (button.querySelector('span')) { // Mood buttons have spans with emojis
-                button.addEventListener('click', function() {
-                    // Remove active state from siblings
-                    this.parentNode.querySelectorAll('button').forEach(btn => {
-                        btn.classList.remove('border-orange-500', 'bg-orange-50');
-                    });
-                    // Add active state
-                    this.classList.add('border-orange-500', 'bg-orange-50');
-                });
-            }
-        });
+        pullStartY = null;
+        isPulling = false;
     });
     </script>
 </body>
