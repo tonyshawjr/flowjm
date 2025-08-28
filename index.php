@@ -637,17 +637,12 @@
               <!-- View Camp Button at bottom of Stacks -->
               <div style="margin-top: 24px; display: flex; justify-content: center;">
                   <button class="btn-secondary" onclick="viewFullCamp()" style="padding: 12px 32px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
-                  <svg xmlns="http://www.w3.org/2000/svg" 
-     width="64" height="64" viewBox="0 0 64 64" 
-     fill="none" stroke="black" stroke-width="4" 
-     stroke-linecap="round" stroke-linejoin="round">
-  <!-- Tent frame poles -->
-  <path d="M16 56 L32 8 L48 56" />
-  <path d="M24 56 L40 56" />
-  <!-- Tent entrance -->
-  <path d="M32 8 L32 56" />
-  <path d="M24 56 L32 40 L40 56 Z" fill="none" />
-</svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M3.5 21 14 3"/>
+                          <path d="M20.5 21 10 3"/>
+                          <path d="M15.5 21 12 15l-3.5 6"/>
+                          <path d="M2 21h20"/>
+                      </svg>
                       Visit Camp
                   </button>
               </div>
