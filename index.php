@@ -140,6 +140,11 @@
               padding: 0;
               margin-bottom: 48px;
           }
+          
+          .stacks-section {
+              padding: 0;
+              margin-bottom: 48px;
+          }
 
           /* Circle Section - Journey Cards */
           .circle-header {
@@ -165,17 +170,17 @@
           }
 
           .section-icon-pulse {
-              width: 24px;
-              height: 24px;
-              margin-right: 16px;
+              width: 28px;
+              height: 28px;
+              margin-right: 12px;
               display: inline-flex;
               align-items: center;
               justify-content: center;
           }
 
           .pulse-icon {
-              stroke: #60A5FA;
-              stroke-width: 2;
+              stroke: rgba(96, 165, 250, 0.7);
+              stroke-width: 1.5;
           }
 
           .section-title {
@@ -284,26 +289,37 @@
           }
 
           /* Stacks Section - Moment Feed */
+          .stacks-container {
+              background: rgba(255, 255, 255, 0.03);
+              backdrop-filter: blur(20px);
+              -webkit-backdrop-filter: blur(20px);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              border-radius: 20px;
+              padding: 60px;
+              min-height: 400px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+          
           .stacks-empty {
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
-              padding: 60px 0;
               text-align: center;
           }
-
-          .pulse-line {
-              width: 60px;
-              height: 2px;
-              background: linear-gradient(90deg, transparent, var(--flow-purple-accent), transparent);
-              margin: 0 auto 24px;
-              animation: pulse 2s ease-in-out infinite;
+          
+          .stacks-icon {
+              font-size: 64px;
+              color: rgba(255, 255, 255, 0.2);
+              margin-bottom: 24px;
           }
-
-          @keyframes pulse {
-              0%, 100% { opacity: 0.3; transform: scaleX(0.5); }
-              50% { opacity: 1; transform: scaleX(1); }
+          
+          .stacks-icon svg {
+              stroke: rgba(255, 255, 255, 0.2);
+              stroke-width: 1;
           }
 
           /* Buttons */
@@ -319,20 +335,14 @@
           }
 
           .btn-secondary {
-              background: rgba(255, 255, 255, 0.1);
+              background: rgba(0, 0, 0, 0.3);
               color: var(--flow-text);
-              border: 1px solid rgba(255, 255, 255, 0.2);
+              border: none;
               padding: 12px 24px;
               border-radius: 12px;
-              font-weight: 600;
+              font-weight: 500;
               font-size: 14px;
               cursor: pointer;
-              transition: all 0.2s ease;
-          }
-
-          .btn-secondary:hover {
-              background: rgba(255, 255, 255, 0.15);
-              border-color: rgba(255, 255, 255, 0.3);
           }
 
           /* Navigation Bar */
@@ -519,12 +529,12 @@
           </section>
 
           <!-- Stacks Section -->
-          <section class="section-card">
+          <section class="stacks-section">
               <div class="circle-header">
                   <h2 class="section-title">
                       <span class="section-icon-pulse">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="pulse-icon">
-                              <path d="M3 12h4l3-9 4 18 3-9h4" stroke="currentColor"/>
+                          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" class="pulse-icon">
+                              <path d="M4 14h4l3-9 6 18 3-9h4" stroke="currentColor"/>
                           </svg>
                       </span>
                       Stacks
@@ -534,47 +544,56 @@
                   </button>
               </div>
 
-              <?php if (!empty($stackMoments)): ?>
-                  <?php foreach ($stackMoments as $moment): ?>
-                  <div class="journey-card" data-moment-id="<?php echo $moment['id']; ?>">
-                      <div class="flex justify-between items-start mb-2">
-                          <span class="text-xs font-semibold text-purple-400 uppercase tracking-wide">
-                              <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
-                          </span>
-                          <span class="text-xs text-gray-400">
-                              <?php echo time_ago($moment['created_at']); ?>
-                          </span>
+              <div class="stacks-container">
+                  <?php if (!empty($stackMoments)): ?>
+                      <?php foreach ($stackMoments as $moment): ?>
+                      <div class="journey-card" data-moment-id="<?php echo $moment['id']; ?>">
+                          <div class="flex justify-between items-start mb-2">
+                              <span class="text-xs font-semibold text-purple-400 uppercase tracking-wide">
+                                  <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
+                              </span>
+                              <span class="text-xs text-gray-400">
+                                  <?php echo time_ago($moment['created_at']); ?>
+                              </span>
+                          </div>
+                          <p class="text-gray-200 leading-relaxed">
+                              <?php echo escapeContent($moment['content']); ?>
+                          </p>
+                          <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
+                          <div class="mt-3">
+                              <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
+                                  <?php echo $moment['type'] == 'milestone' ? 'bg-green-500/20 text-green-400' : ''; ?>
+                                  <?php echo $moment['type'] == 'blocker' ? 'bg-red-500/20 text-red-400' : ''; ?>
+                                  <?php echo $moment['type'] == 'note' ? 'bg-gray-500/20 text-gray-400' : ''; ?>">
+                                  <?php echo ucfirst($moment['type']); ?>
+                              </span>
+                          </div>
+                          <?php endif; ?>
                       </div>
-                      <p class="text-gray-200 leading-relaxed">
-                          <?php echo escapeContent($moment['content']); ?>
-                      </p>
-                      <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
-                      <div class="mt-3">
-                          <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
-                              <?php echo $moment['type'] == 'milestone' ? 'bg-green-500/20 text-green-400' : ''; ?>
-                              <?php echo $moment['type'] == 'blocker' ? 'bg-red-500/20 text-red-400' : ''; ?>
-                              <?php echo $moment['type'] == 'note' ? 'bg-gray-500/20 text-gray-400' : ''; ?>">
-                              <?php echo ucfirst($moment['type']); ?>
-                          </span>
+                      <?php endforeach; ?>
+                  <?php else: ?>
+                      <div class="stacks-empty">
+                          <div class="stacks-icon">
+                              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                                  <path d="M10 40h15l10-25 20 50 10-25h15" stroke="currentColor"/>
+                              </svg>
+                          </div>
+                          <div class="empty-title">No moments yet</div>
+                          <div class="empty-subtitle">Capture your first moment to start building your Stack</div>
+                          <button class="btn-primary" onclick="openQuickAdd()" style="margin-top: 32px;">
+                              Add Moment
+                          </button>
                       </div>
-                      <?php endif; ?>
-                  </div>
-                  <?php endforeach; ?>
-              <?php else: ?>
-                  <div class="stacks-empty">
-                      <div class="pulse-line"></div>
-                      <div class="empty-title">No moments yet</div>
-                      <div class="empty-subtitle">Capture your first moment to start building your Stack</div>
-                      <button class="btn-secondary" onclick="openQuickAdd()" style="margin-top: 24px;">
-                          Add Moment
-                      </button>
-                  </div>
-              <?php endif; ?>
+                  <?php endif; ?>
+              </div>
 
               <!-- View Camp Button at bottom of Stacks -->
-              <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);">
-                  <button class="btn-secondary w-full" onclick="viewFullCamp()" style="width: 100%; padding: 16px; font-size: 16px;">
-                      🏕 View Camp
+              <div style="margin-top: 24px; display: flex; justify-content: center;">
+                  <button class="btn-secondary" onclick="viewFullCamp()" style="padding: 12px 32px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M5 18l5-8 5 8M7.5 18h5M10 10V3M7 6l3-3 3 3"/>
+                      </svg>
+                      Visit Camp
                   </button>
               </div>
           </section>
