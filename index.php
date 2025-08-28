@@ -321,6 +321,58 @@
               stroke: rgba(255, 255, 255, 0.2);
               stroke-width: 1;
           }
+          
+          /* Moment Cards */
+          .moment-card {
+              min-height: 140px;
+          }
+          
+          .moment-journey-title {
+              font-size: 12px;
+              font-weight: 600;
+              color: var(--flow-purple-accent);
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              opacity: 0.8;
+          }
+          
+          .moment-time {
+              font-size: 12px;
+              color: var(--flow-text-secondary);
+              margin-top: 2px;
+          }
+          
+          .moment-content {
+              margin-top: auto;
+              padding-top: 16px;
+              font-size: 15px;
+              line-height: 1.5;
+              color: var(--flow-text);
+          }
+          
+          .moment-type-badge {
+              padding: 4px 10px;
+              border-radius: 8px;
+              font-size: 11px;
+              font-weight: 500;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+          }
+          
+          .moment-type-badge.milestone {
+              background: rgba(74, 222, 128, 0.1);
+              color: #4ADE80;
+          }
+          
+          .moment-type-badge.blocker {
+              background: rgba(248, 113, 113, 0.1);
+              color: #F87171;
+          }
+          
+          .moment-type-badge.note {
+              background: rgba(156, 163, 175, 0.1);
+              color: #9CA3AF;
+          }
 
           /* Buttons */
           .btn-primary {
@@ -544,34 +596,29 @@
                   </button>
               </div>
 
-              <div class="stacks-container">
-                  <?php if (!empty($stackMoments)): ?>
+              <?php if (!empty($stackMoments)): ?>
+                  <div class="journey-grid">
                       <?php foreach ($stackMoments as $moment): ?>
-                      <div class="journey-card" data-moment-id="<?php echo $moment['id']; ?>">
-                          <div class="flex justify-between items-start mb-2">
-                              <span class="text-xs font-semibold text-purple-400 uppercase tracking-wide">
-                                  <?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?>
-                              </span>
-                              <span class="text-xs text-gray-400">
-                                  <?php echo time_ago($moment['created_at']); ?>
-                              </span>
-                          </div>
-                          <p class="text-gray-200 leading-relaxed">
-                              <?php echo escapeContent($moment['content']); ?>
-                          </p>
-                          <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
-                          <div class="mt-3">
-                              <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
-                                  <?php echo $moment['type'] == 'milestone' ? 'bg-green-500/20 text-green-400' : ''; ?>
-                                  <?php echo $moment['type'] == 'blocker' ? 'bg-red-500/20 text-red-400' : ''; ?>
-                                  <?php echo $moment['type'] == 'note' ? 'bg-gray-500/20 text-gray-400' : ''; ?>">
+                      <div class="journey-card moment-card" data-moment-id="<?php echo $moment['id']; ?>">
+                          <div class="journey-header">
+                              <div class="journey-info">
+                                  <div class="moment-journey-title"><?php echo escapeContent($moment['journey_title'] ?? 'Untitled Journey'); ?></div>
+                                  <div class="moment-time"><?php echo time_ago($moment['created_at']); ?></div>
+                              </div>
+                              <?php if (!empty($moment['type']) && $moment['type'] != 'update'): ?>
+                              <span class="moment-type-badge <?php echo $moment['type']; ?>">
                                   <?php echo ucfirst($moment['type']); ?>
                               </span>
+                              <?php endif; ?>
                           </div>
-                          <?php endif; ?>
+                          <div class="moment-content">
+                              <?php echo escapeContent($moment['content']); ?>
+                          </div>
                       </div>
                       <?php endforeach; ?>
-                  <?php else: ?>
+                  </div>
+              <?php else: ?>
+                  <div class="stacks-container">
                       <div class="stacks-empty">
                           <div class="stacks-icon">
                               <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
@@ -584,14 +631,14 @@
                               Add Moment
                           </button>
                       </div>
-                  <?php endif; ?>
-              </div>
+                  </div>
+              <?php endif; ?>
 
               <!-- View Camp Button at bottom of Stacks -->
               <div style="margin-top: 24px; display: flex; justify-content: center;">
                   <button class="btn-secondary" onclick="viewFullCamp()" style="padding: 12px 32px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
                       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M5 18l5-8 5 8M7.5 18h5M10 10V3M7 6l3-3 3 3"/>
+                          <path d="M4 17L10 7L16 17M6 17h8"/>
                       </svg>
                       Visit Camp
                   </button>
