@@ -356,16 +356,21 @@
           .journey-meta {
               display: flex;
               align-items: center;
-              gap: 12px;
-              margin-top: 8px;
-              font-size: 13px;
-              color: var(--flow-text-secondary);
+              gap: 20px;
+              margin-top: 12px;
+              font-size: 14px;
+              color: #B8BCC8;
           }
 
           .journey-meta-item {
               display: flex;
               align-items: center;
-              gap: 4px;
+              gap: 6px;
+          }
+
+          .journey-meta-item svg {
+              opacity: 0.7;
+              flex-shrink: 0;
           }
       </style>
   </head>
@@ -424,21 +429,21 @@
                       </div>
                       <div class="journey-meta">
                           <div class="journey-meta-item">
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                  <rect x="2" y="4" width="12" height="10" rx="1"/>
-                                  <path d="M2 7h12M5 2v2M11 2v2"/>
+                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <circle cx="9" cy="9" r="7"/>
+                                  <path d="M9 5v4l2.5 2.5"/>
                               </svg>
                               <span>Due <?php echo date('M j', strtotime($circleJourney['target_date'] ?? '+7 days')); ?></span>
                           </div>
                           <div class="journey-meta-item">
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                  <path d="M8 2v12M5 5h6c1 0 2 1 2 2s-1 2-2 2c1 0 2 1 2 2s-1 2-2 2H5"/>
+                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <path d="M9 3v12M6 6h4.5a2.5 2.5 0 0 1 0 5c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5H6"/>
                               </svg>
-                              <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0); ?></span>
+                              <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0, '.', ','); ?></span>
                           </div>
                           <div class="journey-meta-item">
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                  <path d="M2 8h3l2-4 2 8 2-4h3"/>
+                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                  <path d="M3 9h3l2-5 4 10 2-5h3"/>
                               </svg>
                               <span><?php echo $circleJourney['moment_count'] ?? 0; ?> moments</span>
                           </div>
