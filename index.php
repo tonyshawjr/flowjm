@@ -149,6 +149,12 @@
               margin-bottom: 24px;
           }
 
+          .journey-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+              gap: 20px;
+          }
+
           .section-icon-circle {
               width: 24px;
               height: 24px;
@@ -189,13 +195,44 @@
               padding: 24px;
               cursor: pointer;
               transition: all 0.2s ease;
-              margin-bottom: 16px;
+              height: 100%;
+              min-height: 140px;
           }
 
           .journey-card:hover {
               background: rgba(255, 255, 255, 0.08);
               transform: translateY(-2px);
               box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          }
+
+          .add-journey-card {
+              background: transparent;
+              backdrop-filter: none;
+              border: 2px dashed rgba(255, 255, 255, 0.2);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              min-height: 140px;
+          }
+
+          .add-journey-card:hover {
+              border-color: rgba(255, 255, 255, 0.4);
+              background: rgba(255, 255, 255, 0.02);
+          }
+
+          .add-journey-icon {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.1);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-bottom: 12px;
+              font-size: 24px;
+              color: rgba(255, 255, 255, 0.5);
           }
 
           /* Empty State Styles */
@@ -415,41 +452,49 @@
               </div>
 
               <?php if (!empty($circleJourneys)): ?>
-                  <?php foreach ($circleJourneys as $circleJourney): ?>
-                  <div class="journey-card" onclick="viewJourney(<?php echo $circleJourney['id']; ?>)">
-                      <div class="flex justify-between items-start">
-                          <div class="flex-1">
-                              <h3 class="text-lg font-semibold mb-1"><?php echo escapeContent($circleJourney['title']); ?></h3>
-                              <p class="text-sm text-gray-400 mb-3"><?php echo escapeContent($circleJourney['client_name'] ?? 'Personal Project'); ?></p>
+                  <div class="journey-grid">
+                      <?php foreach ($circleJourneys as $circleJourney): ?>
+                      <div class="journey-card" onclick="viewJourney(<?php echo $circleJourney['id']; ?>)">
+                          <div class="flex justify-between items-start">
+                              <div class="flex-1">
+                                  <h3 class="text-lg font-semibold mb-1"><?php echo escapeContent($circleJourney['title']); ?></h3>
+                                  <p class="text-sm text-gray-400 mb-3"><?php echo escapeContent($circleJourney['client_name'] ?? 'Personal Project'); ?></p>
+                              </div>
+                              <span class="status-dot <?php
+                                  echo $circleJourney['pulse_status'] == 'critical' ? 'status-critical' :
+                                      ($circleJourney['pulse_status'] == 'warning' ? 'status-warning' : 'status-green');
+                              ?>"></span>
                           </div>
-                          <span class="status-dot <?php
-                              echo $circleJourney['pulse_status'] == 'critical' ? 'status-critical' :
-                                  ($circleJourney['pulse_status'] == 'warning' ? 'status-warning' : 'status-green');
-                          ?>"></span>
+                          <div class="journey-meta">
+                              <div class="journey-meta-item">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                      <circle cx="9" cy="9" r="7"/>
+                                      <path d="M9 5v4l2.5 2.5"/>
+                                  </svg>
+                                  <span>Due <?php echo date('M j', strtotime($circleJourney['target_date'] ?? '+7 days')); ?></span>
+                              </div>
+                              <div class="journey-meta-item">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                      <path d="M9 3v12M6 6h4.5a2.5 2.5 0 0 1 0 5c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5H6"/>
+                                  </svg>
+                                  <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0, '.', ','); ?></span>
+                              </div>
+                              <div class="journey-meta-item">
+                                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
+                                      <path d="M3 9h3l2-5 4 10 2-5h3"/>
+                                  </svg>
+                                  <span><?php echo $circleJourney['moment_count'] ?? 0; ?> moments</span>
+                              </div>
+                          </div>
                       </div>
-                      <div class="journey-meta">
-                          <div class="journey-meta-item">
-                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
-                                  <circle cx="9" cy="9" r="7"/>
-                                  <path d="M9 5v4l2.5 2.5"/>
-                              </svg>
-                              <span>Due <?php echo date('M j', strtotime($circleJourney['target_date'] ?? '+7 days')); ?></span>
-                          </div>
-                          <div class="journey-meta-item">
-                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
-                                  <path d="M9 3v12M6 6h4.5a2.5 2.5 0 0 1 0 5c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5H6"/>
-                              </svg>
-                              <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0, '.', ','); ?></span>
-                          </div>
-                          <div class="journey-meta-item">
-                              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" style="opacity: 0.6;">
-                                  <path d="M3 9h3l2-5 4 10 2-5h3"/>
-                              </svg>
-                              <span><?php echo $circleJourney['moment_count'] ?? 0; ?> moments</span>
-                          </div>
+                      <?php endforeach; ?>
+                      
+                      <!-- Add Journey Card -->
+                      <div class="journey-card add-journey-card" onclick="createJourney()">
+                          <div class="add-journey-icon">+</div>
+                          <div class="text-sm text-gray-400">Add Journey</div>
                       </div>
                   </div>
-                  <?php endforeach; ?>
               <?php else: ?>
                   <div class="empty-circle">
                       <div class="empty-circle-icon"></div>
