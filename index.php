@@ -424,13 +424,23 @@
                       </div>
                       <div class="journey-meta">
                           <div class="journey-meta-item">
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <circle cx="8" cy="8" r="7"/>
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                  <rect x="2" y="4" width="12" height="10" rx="1"/>
+                                  <path d="M2 7h12M5 2v2M11 2v2"/>
                               </svg>
                               <span>Due <?php echo date('M j', strtotime($circleJourney['target_date'] ?? '+7 days')); ?></span>
                           </div>
                           <div class="journey-meta-item">
-                              <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0); ?></span>
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                  <path d="M8 2v12M5 5h6c1 0 2 1 2 2s-1 2-2 2c1 0 2 1 2 2s-1 2-2 2H5"/>
+                              </svg>
+                              <span>$<?php echo number_format($circleJourney['balance_due'] ?? 0, 0); ?></span>
+                          </div>
+                          <div class="journey-meta-item">
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                  <path d="M2 8h3l2-4 2 8 2-4h3"/>
+                              </svg>
+                              <span><?php echo $circleJourney['moment_count'] ?? 0; ?> moments</span>
                           </div>
                       </div>
                   </div>
